@@ -55,7 +55,9 @@ for:
     after_build:
       - sh: >-
           cd ..
+          
           zip esmini-bin.zip bin -r
+          
           appveyor PushArtifact esmini-bin.zip
       
           
