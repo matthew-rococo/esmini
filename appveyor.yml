@@ -60,6 +60,10 @@ for:
 
     after_build:
       - sh: >-
+          lipo -create EnvironmentSimulator/RoadManagerDLL/libRoadManagerDLL.dylib -output RoadManagerDLL.bundle
+          
+          lipo -create EnvironmentSimulator/ScenarioEngineDLL/libScenarioEngineDLL.dylib -output ScenarioEngineDLL.bundle
+
           cd ..
           
           zip esmini-bin.zip bin -r
