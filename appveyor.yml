@@ -3,6 +3,7 @@ image:
 - Visual Studio 2017
 - Visual Studio 2015
 - Ubuntu1804
+- macos-mojave
 configuration: Release
 platform:
 - x64
@@ -34,6 +35,18 @@ for:
           cmake ../ -DUSE_OSG=false
 
           make -j4
+
+  -
+    matrix:
+      only:
+        - image: macos-mojave
+    build_script:
+      - echo MacOS Mojave build script
+      - sh: >-
+          chmod +x create_xcode_project.sh
+          ./create_xcode_project.sh
+          cd build
+          xcodebuild -scheme install build
 
   -
     matrix:
@@ -112,6 +125,8 @@ for:
     matrix:
       exclude:
         - image: Ubuntu1804
+          platform: x86
+        - image: macos-mojave
           platform: x86
         - image: Visual Studio 2015
           platform: x86
