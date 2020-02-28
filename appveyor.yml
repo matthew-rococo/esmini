@@ -39,9 +39,7 @@ for:
           
     after_build:
       - sh: >-
-          cd ..
-          
-          zip esmini-bin.zip bin -r
+          zip esmini-bin.zip EnvironmentSimulator/RoadManagerDLL/libRoadManagerDLL.so EnvironmentSimulator/ScenarioEngineDLL/libScenarioEngineDLL.so
           
           appveyor PushArtifact esmini-bin.zip
 
