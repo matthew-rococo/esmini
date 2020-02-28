@@ -1,8 +1,8 @@
 version: 1.2.{build}
 image:
-- Visual Studio 2017
-- Visual Studio 2015
-- Ubuntu1804
+# - Visual Studio 2017
+# - Visual Studio 2015
+# - Ubuntu1804
 - macos-mojave
 configuration: Release
 platform:
@@ -44,8 +44,11 @@ for:
       - echo MacOS Mojave build script
       - sh: >-
           chmod +x create_xcode_project.sh
+          
           ./create_xcode_project.sh
+          
           cd build
+          
           xcodebuild -scheme install build
 
   -
