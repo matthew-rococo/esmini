@@ -54,8 +54,8 @@ for:
 
     after_build:
       - sh: >-
-          appveyor PushArtifact bin/apple/Release/libRoadManagerDLL.dylib
-          appveyor PushArtifact bin/apple/Release/libScenarioEngineDLL.dylib 
+          appveyor PushArtifact ../bin/apple/Release/libRoadManagerDLL.dylib
+          appveyor PushArtifact ../bin/apple/Release/libScenarioEngineDLL.dylib 
       
           
   -
