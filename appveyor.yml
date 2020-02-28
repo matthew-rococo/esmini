@@ -1,8 +1,8 @@
 version: 1.2.{build}
 image:
-# - Visual Studio 2017
-# - Visual Studio 2015
-# - Ubuntu1804
+- Visual Studio 2017
+- Visual Studio 2015
+- Ubuntu1804
 - macos-mojave
 configuration: Release
 platform:
@@ -37,6 +37,14 @@ for:
 
           make -j4
           
+    after_build:
+      - sh: >-
+          cd ..
+          
+          zip esmini-bin.zip bin -r
+          
+          appveyor PushArtifact esmini-bin.zip
+
   -
     matrix:
       only:
