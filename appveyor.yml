@@ -37,11 +37,6 @@ for:
 
           make -j4
           
-    after_build:
-      - sh: >-
-          appveyor PushArtifact bin/apple/Release/libRoadManagerDLL.dylib
-          appveyor PushArtifact bin/apple/Release/libScenarioEngineDLL.dylib 
-
   -
     matrix:
       only:
@@ -57,6 +52,10 @@ for:
           
           xcodebuild -scheme install -configuration Release build
 
+    after_build:
+      - sh: >-
+          appveyor PushArtifact bin/apple/Release/libRoadManagerDLL.dylib
+          appveyor PushArtifact bin/apple/Release/libScenarioEngineDLL.dylib 
       
           
   -
