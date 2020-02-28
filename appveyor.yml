@@ -13,6 +13,7 @@ cache:
 - resources/models
 
 after_build:
+ - 
   cmd:
     7z a esmini-bin.zip bin/*
 
@@ -35,6 +36,11 @@ for:
           cmake ../ -DUSE_OSG=false
 
           make -j4
+          
+    after_build:
+      - sh: >-
+          appveyor PushArtifact bin/apple/Release/libRoadManagerDLL.dylib
+          appveyor PushArtifact bin/apple/Release/libScenarioEngineDLL.dylib 
 
   -
     matrix:
@@ -49,8 +55,10 @@ for:
           
           cd build
           
-          xcodebuild -scheme install build
+          xcodebuild -scheme install -configuration Release build
 
+      
+          
   -
     matrix:
       only:
