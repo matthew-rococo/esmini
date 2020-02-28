@@ -60,9 +60,9 @@ for:
 
     after_build:
       - sh: >-
-          lipo -create EnvironmentSimulator/RoadManagerDLL/Release/libRoadManagerDLL.dylib -output RoadManagerDLL.bundle
+          lipo -create EnvironmentSimulator/RoadManagerDLL/Release/libRoadManagerDLL.dylib -output ../bin/RoadManagerDLL.bundle
           
-          lipo -create EnvironmentSimulator/ScenarioEngineDLL/Release/libScenarioEngineDLL.dylib -output ScenarioEngineDLL.bundle
+          lipo -create EnvironmentSimulator/ScenarioEngineDLL/Release/libScenarioEngineDLL.dylib -output ../bin/ScenarioEngineDLL.bundle
 
           cd ..
           
