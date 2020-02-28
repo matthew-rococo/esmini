@@ -1,8 +1,8 @@
 version: 1.2.{build}
 image:
-- Visual Studio 2017
-- Visual Studio 2015
-- Ubuntu1804
+# - Visual Studio 2017
+# - Visual Studio 2015
+# - Ubuntu1804
 - macos-mojave
 configuration: Release
 platform:
@@ -60,16 +60,15 @@ for:
 
     after_build:
       - sh: >-
-          lipo -create EnvironmentSimulator/RoadManagerDLL/libRoadManagerDLL.dylib -output RoadManagerDLL.bundle
+          lipo -create EnvironmentSimulator/RoadManagerDLL/Release/libRoadManagerDLL.dylib -output RoadManagerDLL.bundle
           
-          lipo -create EnvironmentSimulator/ScenarioEngineDLL/libScenarioEngineDLL.dylib -output ScenarioEngineDLL.bundle
+          lipo -create EnvironmentSimulator/ScenarioEngineDLL/Release/libScenarioEngineDLL.dylib -output ScenarioEngineDLL.bundle
 
           cd ..
           
           zip esmini-bin.zip bin -r
           
-          appveyor PushArtifact esmini-bin.zip
-      
+          appveyor PushArtifact esmini-bin.zip    
           
   -
     matrix:
