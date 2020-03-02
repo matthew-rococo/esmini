@@ -41,6 +41,8 @@ for:
           
     after_build:
       - sh: >-
+          cd
+
           mkdir bin
 
           cd build
