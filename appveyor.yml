@@ -41,8 +41,10 @@ for:
           
     after_build:
       - sh: >-
-          mkdir ../bin
-          
+          mkdir bin
+
+          cd build
+
           cp EnvironmentSimulator/RoadManagerDLL/libRoadManagerDLL.so EnvironmentSimulator/ScenarioEngineDLL/libScenarioEngineDLL.so EnvironmentSimulator/EgoSimulator/EgoSimulator EnvironmentSimulator/Replayer/Replayer EnvironmentSimulator/EnvironmentSimulator/EnvironmentSimulator EnvironmentSimulator/OpenDriveViewer/OpenDriveViewer EnvironmentSimulator/ScenarioViewer/ScenarioViewer ../bin
           
           cd ..
