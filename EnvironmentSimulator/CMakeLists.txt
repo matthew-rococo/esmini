@@ -20,7 +20,7 @@ set ( OSG_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph" )
 
 if(UNIX)
   set ( TIME_LIB "" )
-  set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=18f45PxneL6pPBRzwvG6SD74Oafwyn7TR ) 
+  set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=1OufA3TUQjBTkaRvAuo0rSUwryvoqde8G )
   set ( OSG_DIR "${OSG_BASE_DIR}/linux" )
 elseif (WINSDK7_1)
   set ( SOCK_LIB Ws2_32.lib )
