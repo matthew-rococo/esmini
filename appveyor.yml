@@ -1,9 +1,9 @@
 version: 1.2.{build}
 image:
-- Visual Studio 2017
-- Visual Studio 2015
+# - Visual Studio 2017
+# - Visual Studio 2015
 - Ubuntu1804
-- macos-mojave
+# - macos-mojave
 configuration: Release
 platform:
 - x64
@@ -33,13 +33,19 @@ for:
 
           cd build
 
-          cmake ../ -DUSE_OSG=false
+          cmake ../ -DUSE_OSG=true
 
           make -j4
           
     after_build:
       - sh: >-
-          zip esmini-bin.zip EnvironmentSimulator/RoadManagerDLL/libRoadManagerDLL.so EnvironmentSimulator/ScenarioEngineDLL/libScenarioEngineDLL.so
+          mkdir ../bin
+          
+          cp EnvironmentSimulator/RoadManagerDLL/libRoadManagerDLL.so EnvironmentSimulator/ScenarioEngineDLL/libScenarioEngineDLL.so EnvironmentSimulator/EgoSimulator/EgoSimulator EnvironmentSimulator/Replayer/Replayer EnvironmentSimulator/EnvironmentSimulator/EnvironmentSimulator EnvironmentSimulator/OpenDriveViewer/OpenDriveViewer EnvironmentSimulator/ScenarioViewer/ScenarioViewer ../bin
+          
+          cd ..
+          
+          zip esmini-bin.zip bin
           
           appveyor PushArtifact esmini-bin.zip
 

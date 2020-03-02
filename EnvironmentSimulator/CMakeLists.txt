@@ -18,7 +18,11 @@ set ( COMMON_MINI_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/CommonMini")
 set ( OSG_VERSION "osg160" )
 set ( OSG_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph" )
 
-if (WINSDK7_1)
+if(UNIX)
+  set ( TIME_LIB "" )
+  set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=18f45PxneL6pPBRzwvG6SD74Oafwyn7TR ) 
+  set ( OSG_DIR "${OSG_BASE_DIR}/linux" )
+elseif (WINSDK7_1)
   set ( SOCK_LIB Ws2_32.lib )
   set ( TIME_LIB winmm.lib )
   set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=1aN88B1_7MnT0OwHt_LOc8FtD7rFEP0Jq )
@@ -29,13 +33,11 @@ elseif ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
   set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=14Xqe_bWGuZQAr69mit4melmnMfmNFOO6 )
   set ( OSG_DIR "${OSG_BASE_DIR}/win32" )
 else()  # v10
-if(NOT UNIX)
   set ( SOCK_LIB Ws2_32.lib )
-endif (NOT UNIX)
   set ( TIME_LIB "" )
   set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=1a0HxilPJq2bZrat2le2x-Cscs5JeVAXP )
   set ( OSG_DIR "${OSG_BASE_DIR}/v10" )
-endif (WINSDK7_1)
+endif (UNIX)
 
 set ( OSG_INCLUDE_DIR 
 	"${OSG_DIR}/build/include"
@@ -54,13 +56,13 @@ if(UNIX)
    SET(CMAKE_CXX_FLAGS "-std=c++14 -pthread -fPIC")
   
   add_library( db_serializers_osgsim UNKNOWN IMPORTED)
-  set_property(TARGET db_serializers_osgsim PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/v10/lib/osgPlugins-3.6.3/osgdb_serializers_osgsim.so")
+  set_property(TARGET db_serializers_osgsim PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/linux/lib/osgPlugins-3.6.3/osgdb_serializers_osgsim.so")
 
   add_library( db_serializers_osg UNKNOWN IMPORTED)
-  set_property(TARGET db_serializers_osg  PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/v10/lib/osgPlugins-3.6.3/osgdb_serializers_osg.so")
+  set_property(TARGET db_serializers_osg  PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/linux/lib/osgPlugins-3.6.3/osgdb_serializers_osg.so")
 
   add_library( db_osg UNKNOWN IMPORTED)
-  set_property(TARGET db_osg PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/v10/lib/osgPlugins-3.6.3/osgdb_osg.so")
+  set_property(TARGET db_osg PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/linux/lib/osgPlugins-3.6.3/osgdb_osg.so")
 
   link_directories(${OSG_LIBRARIES_PATH})
 
