@@ -51,7 +51,7 @@ for:
           
           cd ..
           
-          zip esmini-bin.zip bin
+          zip -r esmini-bin.zip bin 
           
           appveyor PushArtifact esmini-bin.zip
 
