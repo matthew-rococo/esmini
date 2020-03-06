@@ -31,30 +31,21 @@ for:
           
     build_script:
       - sh: >-
-          mkdir build
-
+          ./create_ubuntu_gcc_project
+          
           cd build
-
-          cmake ../ -DUSE_OSG=true
-
-          make -j4
+          
+          make -j4 install
           
     after_build:
       - sh: >-
-          cd ..
-
-          mkdir bin
-
-          cd build
-
-          cp EnvironmentSimulator/RoadManagerDLL/libRoadManagerDLL.so EnvironmentSimulator/ScenarioEngineDLL/libScenarioEngineDLL.so EnvironmentSimulator/EgoSimulator/EgoSimulator EnvironmentSimulator/Replayer/Replayer EnvironmentSimulator/EnvironmentSimulator/EnvironmentSimulator EnvironmentSimulator/OpenDriveViewer/OpenDriveViewer EnvironmentSimulator/ScenarioViewer/ScenarioViewer ../bin
-          
-          cd ..
-          
           zip -r esmini-bin.zip bin 
           
           appveyor PushArtifact esmini-bin.zip
 
+          ./generate_binary_dist.sh
+          
+          appveyor PushArtifact esmini-demo.zip
   -
     matrix:
       only:
