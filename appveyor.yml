@@ -9,7 +9,7 @@ platform:
 - x64
 - x86
 cache:
-- externals/OpenSceneGraph
+#- externals/OpenSceneGraph
 - resources/models
 
 after_build:
@@ -46,6 +46,8 @@ for:
           appveyor PushArtifact esmini-bin.zip
 
           chmod +x ./generate_binary_dist.sh
+          
+          chmod -R +x ./run/*
 
           ./generate_binary_dist.sh
           
