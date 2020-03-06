@@ -31,7 +31,7 @@ for:
           
     build_script:
       - sh: >-
-          ./create_ubuntu_gcc_project
+          ./create_ubuntu_gcc_project.sh
           
           cd build
           
