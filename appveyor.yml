@@ -1,47 +1,19 @@
 version: 1.2.{build}
 image:
-#- Visual Studio 2017
+- Visual Studio 2017
 #- Visual Studio 2015
 - Ubuntu1804
 #- macos-mojave
 configuration: Release
 platform:
 - x64
-- x86
+#- x86
 cache:
 - externals/OpenSceneGraph
 - resources/models
-
-artifacts:
-  - path: esmini-demo.zip
-    name: Demo
-
-  - path: esmini-bin.zip
-    name: Binaries
     
 # publish package on tag build
-deploy:
-- provider: GitHub
-  name: Demo
-  on: 
-    appveor_repo_tag: true
-    platform: x64
-    image: Visual Studio 2017
-    artifact: mavgclinstaller
     
-- provider: GitHub
-  name: Demo
-  on: 
-    appveor_repo_tag: true
-    image: Ubuntu1804
-    
-after_build:
- - 
-  cmd:
-    7z a esmini-bin.zip bin/*
-
-    appveyor PushArtifact esmini-bin.zip
-
 for:
   -
     matrix:
@@ -64,16 +36,29 @@ for:
       - sh: >-
           cd ..
           
-          zip -r esmini-bin.zip bin 
+          zip -r esmini-bin_ubuntu.zip bin 
           
-          appveyor PushArtifact esmini-bin.zip
+          appveyor PushArtifact esmini-bin_ubuntu.zip
 
           chmod -R +x ./run/*
 
           ./generate_binary_dist.sh
           
-          appveyor PushArtifact esmini-demo.zip
-  -
+          appveyor PushArtifact esmini-demo_ubuntu.zip
+    
+    artifacts:
+      - path: esmini-demo_ubuntu.zip
+        name: demo_ubuntu
+
+    deploy:
+      - provider: GitHub
+        name: Demo-ubuntu
+        on: 
+          appveor_repo_tag: true
+          image: Ubuntu1804
+          artifact: demo_ubuntu
+
+    -
     matrix:
       only:
         - image: macos-mojave
@@ -98,9 +83,7 @@ for:
           
           zip esmini-bin.zip bin -r
           
-          appveyor PushArtifact esmini-bin.zip    
-          
-  -
+    -
     matrix:
       only:
         - image: Visual Studio 2017
@@ -126,9 +109,19 @@ for:
 
           generate_binary_dist.bat
 
-          7z a esmini-demo.zip esmini-demo/*
+          7z a esmini-demo_win.zip esmini-demo/*
 
-          appveyor PushArtifact esmini-demo.zip
+    artifacts:
+      - path: esmini-demo_win.zip
+        name: demo_win
+
+    deploy:
+      - provider: GitHub
+        name: demo_win
+        on: 
+          appveor_repo_tag: true
+          artifact: demo_win
+
   -
     matrix:
       only:
