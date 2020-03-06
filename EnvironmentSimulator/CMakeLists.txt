@@ -53,38 +53,36 @@ set ( OSG_LIBRARIES_PATH
 )
 
 if(UNIX)
-   SET(CMAKE_CXX_FLAGS "-std=c++14 -pthread -fPIC")
+   SET(CMAKE_CXX_FLAGS "-std=c++14 -pthread -flto -Wl,-strip-all")
   
-  add_library( db_serializers_osgsim UNKNOWN IMPORTED)
-  set_property(TARGET db_serializers_osgsim PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/linux/lib/osgPlugins-3.6.3/osgdb_serializers_osgsim.so")
-
-  add_library( db_serializers_osg UNKNOWN IMPORTED)
-  set_property(TARGET db_serializers_osg  PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/linux/lib/osgPlugins-3.6.3/osgdb_serializers_osg.so")
-
-  add_library( db_osg UNKNOWN IMPORTED)
-  set_property(TARGET db_osg PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../externals/OpenSceneGraph/linux/lib/osgPlugins-3.6.3/osgdb_osg.so")
-
   link_directories(${OSG_LIBRARIES_PATH})
+  
+#  set( CMAKE_VERBOSE_MAKEFILE on )
 
   set ( OSG_LIBRARIES
+	
+	osgdb_serializers_osgsim.a
+	osgdb_serializers_osg.a
+	osgdb_osg.a
+    
+	osgAnimation
+
+	osgText
+	osgSim
+	osgViewer
+	osgUtil
+	osgDB
+	osgGA
+	osg
+
+	OpenThreads
+
 	GL
-	optimized z debug z
-	optimized osg debug osgd
-
-	optimized osgAnimation debug osgAnimationd
-	optimized osgDB debug osgDBd
-	optimized osgGA debug osgGAd
-	optimized osgViewer debug osgViewerd
-
-	optimized osgText debug osgTextd
-	optimized osgUtil debug osgUtild
-	optimized osgSim debug osgSimd
-
-	optimized OpenThreads debug OpenThreadsd
-
-	db_serializers_osgsim
-	db_serializers_osg
-	db_osg
+	X11
+	Xrandr
+	dl
+	libz.a
+    Xinerama
 	#db_fbx
   )
 else() #not UNIX
