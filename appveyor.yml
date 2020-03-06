@@ -43,9 +43,7 @@ for:
           chmod -R +x ./run/*
 
           ./generate_binary_dist.sh
-          
-          appveyor PushArtifact esmini-demo_ubuntu.zip
-    
+              
     artifacts:
       - path: esmini-demo_ubuntu.zip
         name: demo_ubuntu
@@ -83,6 +81,8 @@ for:
           
           zip esmini-bin.zip bin -r
           
+          PushArtifact 
+          
   -
     matrix:
       only:
@@ -111,6 +111,14 @@ for:
 
           7z a esmini-demo_win.zip esmini-demo/*
 
+          appveyor PushArtifact esmini-bin_ubuntu.zip
+
+    after_build:
+      - cmd:
+            7z a esmini-bin_win.zip bin/*
+
+            appveyor PushArtifact esmini-bin_win.zip
+
     artifacts:
       - path: esmini-demo_win.zip
         name: demo_win
@@ -121,7 +129,7 @@ for:
         on: 
           appveor_repo_tag: true
           artifact: demo_win
-
+    
   -
     matrix:
       only:
