@@ -12,6 +12,13 @@ cache:
 - externals/OpenSceneGraph
 - resources/models
 
+artifacts:
+  - path: esmini-demo.zip
+    name: Demo
+
+  - path: esmini-bin.zip
+    name: Binaries
+    
 # publish package on tag build
 deploy:
 - provider: GitHub
@@ -20,6 +27,7 @@ deploy:
     appveor_repo_tag: true
     platform: x64
     image: Visual Studio 2017
+    artifact: mavgclinstaller
     
 - provider: GitHub
   name: Demo
