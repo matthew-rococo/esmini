@@ -12,7 +12,7 @@ IF NOT EXIST %target_dir%\resources\xodr ( mkdir %target_dir%\resources\xodr )
 IF NOT EXIST %target_dir%\resources\models ( mkdir %target_dir%\resources\models )
 IF NOT EXIST %target_dir%\run ( mkdir %target_dir%\run )
 IF NOT EXIST %target_dir%\run\EgoSimulator ( mkdir %target_dir%\run\EgoSimulator )
-IF NOT EXIST %target_dir%\bin\win64\Release ( mkdir %target_dir%\bin\win64\Release )
+IF NOT EXIST %target_dir%\bin ( mkdir %target_dir%\bin )
 IF NOT EXIST %target_dir%\3rd_party_terms_and_licenses ( mkdir %target_dir%\3rd_party_terms_and_licenses )
 
 copy resources\xosc\basic_hybrid.xosc %target_dir%\resources\xosc /y
@@ -31,7 +31,6 @@ copy resources\xosc\Catalogs\Maneuvers\*.* %target_dir%\resources\xosc\Catalogs\
 copy resources\xosc\Catalogs\Routes\*.* %target_dir%\resources\xosc\Catalogs\Routes /y
 copy resources\xosc\Catalogs\Vehicles\*.* %target_dir%\resources\xosc\Catalogs\Vehicles /y
 copy resources\xosc\extensions\*.* %target_dir%\resources\xosc\extensions /y
-IF NOT EXIST %target_dir%\bin\win64\Release ( mkdir %target_dir%\bin\win64\Release )
 
 copy resources\xodr\soderleden.xodr %target_dir%\resources\xodr /y
 copy resources\xodr\e6mini.xodr %target_dir%\resources\xodr /y
@@ -74,4 +73,4 @@ copy 3rd_party_terms_and_licenses\* %target_dir%\3rd_party_terms_and_licenses /y
 copy LICENSE %target_dir% /y
 copy release_notes.txt %target_dir% /y
 
-copy bin\EgoSimulator.exe /y
+copy bin\EgoSimulator.exe %target_dir%\bin /y
