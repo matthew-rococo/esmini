@@ -31,6 +31,8 @@ for:
           
     build_script:
       - sh: >-
+          chmod +x ./create_ubuntu_gcc_project.sh
+
           ./create_ubuntu_gcc_project.sh
           
           cd build
@@ -42,6 +44,8 @@ for:
           zip -r esmini-bin.zip bin 
           
           appveyor PushArtifact esmini-bin.zip
+
+          chmod +x ./generate_binary_dist.sh
 
           ./generate_binary_dist.sh
           
