@@ -111,8 +111,6 @@ for:
 
           7z a esmini-demo_win.zip esmini-demo/*
 
-          appveyor PushArtifact esmini-bin_ubuntu.zip
-
     after_build:
       - cmd:
             7z a esmini-bin_win.zip bin/*
