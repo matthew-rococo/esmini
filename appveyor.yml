@@ -58,7 +58,7 @@ for:
           image: Ubuntu1804
           artifact: demo_ubuntu
 
-    -
+  -
     matrix:
       only:
         - image: macos-mojave
@@ -83,7 +83,7 @@ for:
           
           zip esmini-bin.zip bin -r
           
-    -
+  -
     matrix:
       only:
         - image: Visual Studio 2017
