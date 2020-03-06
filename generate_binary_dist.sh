@@ -54,4 +54,4 @@ run/readme.txt \
 3rd_party_terms_and_licenses/* \
 LICENSE \
 release_notes.txt \
-bin/EgoSimulator/Release/EgoSimulator.exe 
+bin/EgoSimulator
