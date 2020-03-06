@@ -12,6 +12,22 @@ cache:
 - externals/OpenSceneGraph
 - resources/models
 
+# publish package on tag build
+deploy:
+- provider: GitHub
+  name: Demo
+  on: 
+    appveor_repo_tag: true
+    platform: x64
+    image: Visual Studio 2017
+    
+deploy:
+- provider: GitHub
+  name: Demo
+  on: 
+    appveor_repo_tag: true
+    image: Ubuntu1804
+    
 after_build:
  - 
   cmd:
