@@ -52,7 +52,7 @@ for:
       - provider: GitHub
         name: Demo-ubuntu
         on: 
-          appveor_repo_tag: true
+          appveyor_repo_tag: true
           image: Ubuntu1804
           artifact: demo_ubuntu
 
@@ -125,7 +125,7 @@ for:
       - provider: GitHub
         name: demo_win
         on: 
-          appveor_repo_tag: true
+          appveyor_repo_tag: true
           artifact: demo_win
     
   -

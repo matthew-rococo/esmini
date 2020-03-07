@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rm esmini-demo.zip
+rm -f esmini-demo_ubuntu.zip
 
 zip esmini-demo_ubuntu.zip \
 resources/xosc/basic_hybrid.xosc \
