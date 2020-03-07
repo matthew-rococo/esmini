@@ -10,7 +10,7 @@ platform:
 #- x86
 cache:
 - externals/OpenSceneGraph
-# - resources/models
+- resources/models
     
 # publish package on tag build
     
