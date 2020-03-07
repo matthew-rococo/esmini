@@ -10,7 +10,7 @@ platform:
 #- x86
 cache:
 - externals/OpenSceneGraph
-- resources/models
+# - resources/models
     
 # publish package on tag build
     
@@ -109,10 +109,10 @@ for:
 
           generate_binary_dist.bat
 
-          7z a esmini-demo_win.zip esmini-demo/*
-
     after_build:
       - cmd:
+            7z a esmini-demo_win.zip esmini-demo/*
+ 
             7z a esmini-bin_win.zip bin/*
 
             appveyor PushArtifact esmini-bin_win.zip
