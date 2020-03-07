@@ -14,8 +14,8 @@ cache:
     
 # publish package on tag build
 deploy:
-  - provider: GitHub
-    name: esmini_release
+- provider: GitHub
+  name: esmini_release
 #    on: 
 #      appveyor_repo_tag: true
     
@@ -118,12 +118,6 @@ for:
       - path: esmini-demo_win.zip
         name: demo_win
 
-    deploy:
-      - provider: GitHub
-        name: Demo_win
-        on: 
-          appveyor_repo_tag: true
-    
   -
     matrix:
       only:
