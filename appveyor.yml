@@ -2,7 +2,7 @@ version: 1.2.{build}
 image:
 - Visual Studio 2017
 #- Visual Studio 2015
-- Ubuntu1804
+#- Ubuntu1804
 #- macos-mojave
 configuration: Release
 platform:
@@ -13,6 +13,11 @@ cache:
 - resources/models
     
 # publish package on tag build
+deploy:
+  - provider: GitHub
+    name: esmini_release
+#    on: 
+#      appveyor_repo_tag: true
     
 for:
   -
@@ -47,13 +52,6 @@ for:
     artifacts:
       - path: esmini-demo_ubuntu.zip
         name: demo_ubuntu
-
-    deploy:
-      - provider: GitHub
-        name: Demo-ubuntu
-        on: 
-          appveyor_repo_tag: true
-          image: Ubuntu1804
 
   -
     matrix:
