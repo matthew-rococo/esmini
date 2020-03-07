@@ -54,7 +54,6 @@ for:
         on: 
           appveyor_repo_tag: true
           image: Ubuntu1804
-          artifact: demo_ubuntu
 
   -
     matrix:
@@ -123,10 +122,9 @@ for:
 
     deploy:
       - provider: GitHub
-        name: demo_win
+        name: Demo_win
         on: 
           appveyor_repo_tag: true
-          artifact: demo_win
     
   -
     matrix:
