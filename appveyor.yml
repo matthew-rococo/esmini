@@ -51,8 +51,7 @@ for:
           ./generate_binary_dist.sh
               
     artifacts:
-      - path: esmini-demo_ubuntu.zip
-      - path: esmini-bin_ubuntu.zip
+      - path: esmini-demo_ubuntu.zip esmini-bin_ubuntu.zip
         name: ubuntu_artifacts
 
   -
@@ -115,8 +114,7 @@ for:
             7z a esmini-bin_win.zip bin/*
 
     artifacts:
-      - path: esmini-demo_win.zip
-        path: esmini-bin_win.zip
+      - path: esmini-demo_win.zip esmini-bin_win.zip
         name: windows_artifacts
 
   -
