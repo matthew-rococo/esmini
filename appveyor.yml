@@ -13,14 +13,16 @@ cache:
 - externals/OpenSceneGraph
 - resources/models
     
-# publish package on tag build
+# publish package on tag build    
 deploy:
   - provider: GitHub
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    release: esmini v$(appveyor_build_version)
+    description: 'Demo and binaries'
     auth_token:
       secure: 'Zsjm85fzs4eTdDJg1VB+Y8Lk+5bEJRBkeaEtYtnbtv2IUg1sanoQTub/55QYNBsY'
-    name: esmini_release
     on:
-      APPVEYOR_REPO_TAG: true
+       APPVEYOR_REPO_TAG: true       # deploy on tag push only
     
 for:
   -
