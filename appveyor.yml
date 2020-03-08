@@ -14,13 +14,11 @@ cache:
 - resources/models
     
 # publish package on tag build
-deploy:
-- provider: GitHub
-  auth_token:
-    secure: 'Zsjm85fzs4eTdDJg1VB+Y8Lk+5bEJRBkeaEtYtnbtv2IUg1sanoQTub/55QYNBsY'
-  name: esmini_release
-#    on: 
-#      appveyor_repo_tag: true
+#deploy:
+#- provider: GitHub
+#  auth_token:
+#    secure: 'Zsjm85fzs4eTdDJg1VB+Y8Lk+5bEJRBkeaEtYtnbtv2IUg1sanoQTub/55QYNBsY'
+#  name: esmini_release
     
 for:
   -
