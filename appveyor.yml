@@ -15,12 +15,12 @@ cache:
     
 # publish package on tag build
 deploy:
-- provider: GitHub
-  auth_token:
-    secure: 'Zsjm85fzs4eTdDJg1VB+Y8Lk+5bEJRBkeaEtYtnbtv2IUg1sanoQTub/55QYNBsY'
-  name: esmini_release
-  on:
-    APPVEYOR_REPO_TAG: true
+  - provider: GitHub
+    auth_token:
+      secure: 'Zsjm85fzs4eTdDJg1VB+Y8Lk+5bEJRBkeaEtYtnbtv2IUg1sanoQTub/55QYNBsY'
+    name: esmini_release
+    on:
+      APPVEYOR_REPO_TAG: true
     
 for:
   -
