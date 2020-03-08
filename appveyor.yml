@@ -1,4 +1,5 @@
 version: 1.2.{build}
+
 image:
 - Visual Studio 2017
 #- Visual Studio 2015
@@ -16,7 +17,7 @@ cache:
 deploy:
 - provider: GitHub
   auth_token:
-    secure: c6142b64b4ca842142a511e1905d124c5a3165a6
+    secure: 'Zsjm85fzs4eTdDJg1VB+Y8Lk+5bEJRBkeaEtYtnbtv2IUg1sanoQTub/55QYNBsY'
   name: esmini_release
 #    on: 
 #      appveyor_repo_tag: true
@@ -45,15 +46,14 @@ for:
           
           zip -r esmini-bin_ubuntu.zip bin 
           
-          appveyor PushArtifact esmini-bin_ubuntu.zip
-
           chmod -R +x ./run/*
 
           ./generate_binary_dist.sh
               
     artifacts:
       - path: esmini-demo_ubuntu.zip
-        name: demo_ubuntu
+      - path: esmini-bin_ubuntu.zip
+        name: ubuntu_artifacts
 
   -
     matrix:
@@ -114,11 +114,10 @@ for:
  
             7z a esmini-bin_win.zip bin/*
 
-            appveyor PushArtifact esmini-bin_win.zip
-
     artifacts:
       - path: esmini-demo_win.zip
-        name: demo_win
+        path: esmini-bin_win.zip
+        name: windows_artifacts
 
   -
     matrix:
