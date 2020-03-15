@@ -43,7 +43,7 @@ private:
 
 	std::string RequestControlMode2Str(RequestControlMode mode);
 	void ViewerFrame();
-	int ScenarioPlayer::Init(int argc, char *argv[]);
+	int Init(int argc, char *argv[]);
 
 	const double maxStepSize;
 	const double minStepSize;

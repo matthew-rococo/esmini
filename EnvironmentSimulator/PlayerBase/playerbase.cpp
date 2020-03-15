@@ -23,9 +23,9 @@
 
 using namespace scenarioengine;
 
-osg::Vec3 color_dark_gray = { 0.5, 0.5, 0.5 };
-osg::Vec3 color_yellow = { 0.55, 0.46, 0.4 };
-osg::Vec3 color_red = { 0.6, 0.2, 0.2 };
+static double color_dark_gray[] = { 0.5, 0.5, 0.5 };
+static double color_yellow[] = { 0.55, 0.46, 0.4 };
+static double color_red[] = { 0.6, 0.2, 0.2 };
 
 void log_callback(const char *str)
 {
