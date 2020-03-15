@@ -33,12 +33,17 @@ class ScenarioPlayer
 	} RequestControlMode;
 
 public:
+	ScenarioPlayer(int argc, char *argv[]);
+	~ScenarioPlayer();
+	bool IsQuitRequested() { return quit_request; }
+	void Frame();
+	void ScenarioFrame();
+
+private:
 
 	std::string RequestControlMode2Str(RequestControlMode mode);
-	void scenario_frame();
-	void viewer_frame();
+	void ViewerFrame();
 	int ScenarioPlayer::Init(int argc, char *argv[]);
-	ScenarioPlayer(int argc, char *argv[]);
 
 	const double maxStepSize;
 	const double minStepSize;

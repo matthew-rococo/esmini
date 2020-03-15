@@ -48,11 +48,34 @@ ScenarioPlayer::ScenarioPlayer(int argc, char *argv[]) :
 	quit_request = false;
 	threads = false;
 
-	Init(argc, argv);
+	if (Init(argc, argv) != 0)
+	{
+		throw std::invalid_argument("Failed to initialize scenario player");
+	}
 }
 
+ScenarioPlayer::~ScenarioPlayer()
+{
+	if (scenarioEngine->entities.object_[0]->GetControl() == Object::Control::EXTERNAL ||
+		scenarioEngine->entities.object_[0]->GetControl() == Object::Control::HYBRID_EXTERNAL)
+	{
+		StopServer();
+	}
 
-void ScenarioPlayer::scenario_frame()
+	delete viewer_;
+	delete scenarioEngine;
+}
+
+void ScenarioPlayer::Frame()
+{
+	if (!threads)
+	{
+		ScenarioFrame();
+	}
+	ViewerFrame();
+}
+
+void ScenarioPlayer::ScenarioFrame()
 {
 	static __int64 lastTimeStamp = 0;
 	double deltaSimTime;
@@ -80,8 +103,6 @@ void ScenarioPlayer::scenario_frame()
 	// Time operations
 	simTime = simTime + deltaSimTime;
 
-	// ScenarioEngine
-
 	mutex.Lock();
 
 	scenarioEngine->step(deltaSimTime);
@@ -96,7 +117,7 @@ void ScenarioPlayer::scenario_frame()
 	mutex.Unlock();
 }
 
-void ScenarioPlayer::viewer_frame()
+void ScenarioPlayer::ViewerFrame()
 {
 	static double last_dot_time = 0;
 
@@ -134,15 +155,19 @@ void ScenarioPlayer::viewer_frame()
 	mutex.Unlock();
 
 	viewer_->osgViewer_->frame();
+	if (viewer_->osgViewer_->done())
+	{
+		quit_request = true;
+	}
 }
 
 void scenario_thread(void *args)
 {
 	ScenarioPlayer *player = (ScenarioPlayer*)args;
 
-	while (!player->quit_request)
+	while (!player->IsQuitRequested())
 	{
-		player->scenario_frame();
+		player->ScenarioFrame();
 	}
 }
 
@@ -274,33 +299,8 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 	if (threads)
 	{
 		// Launch scenario engine in a separate thread
-		thread.Start(scenario_thread, 0);
+		thread.Start(scenario_thread, this);
 	}
-
-}
-
-int main(int argc, char *argv[])
-{
-	ScenarioPlayer *player = new ScenarioPlayer(argc, argv);
-
-	while (!player->viewer_->osgViewer_->done())
-	{
-		if (!player->threads)
-		{
-			player->scenario_frame();
-		}
-		player->viewer_frame();
-	}
-	player->quit_request = true;
-	delete player->viewer_;
-
-	if (player->scenarioEngine->entities.object_[0]->GetControl() == Object::Control::EXTERNAL ||
-		player->scenarioEngine->entities.object_[0]->GetControl() == Object::Control::HYBRID_EXTERNAL)
-	{
-		StopServer();
-	}
-
-	delete player->scenarioEngine;
 
 	return 0;
 }

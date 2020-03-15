@@ -193,6 +193,7 @@ private:
 
 std::string DirNameOf(const std::string& fname);
 std::string FileNameOf(const std::string& fname);
+std::string FileNameWithoutExtOf(const std::string& fname);
 
 
 // Global Logger class

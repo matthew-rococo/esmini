@@ -309,6 +309,27 @@ std::string FileNameOf(const std::string& fname)
 	}
 }
 
+std::string FileNameWithoutExtOf(const std::string& fname)
+{
+	size_t start_pos = fname.find_last_of("\\/");
+	if (start_pos != std::string::npos)
+	{
+		size_t end_pos = fname.find_last_of(".");
+		if (end_pos != std::string::npos)
+		{
+			return (fname.substr(start_pos + 1, end_pos - start_pos - 1));
+		}
+		else
+		{
+			return (fname.substr(start_pos + 1));
+		}
+	}
+	else
+	{
+		return fname;  // Assume filename with no separator
+	}
+}
+
 double GetCrossProduct2D(double x1, double y1, double x2, double y2)
 {
 	return x1 * y2 - x2 * y1;

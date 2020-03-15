@@ -606,6 +606,13 @@ Viewer::Viewer(roadmanager::OpenDrive *odrManager, const char *modelFilename, co
 
 	osgViewer_ = new osgViewer::Viewer(arguments); 
 
+	// Decorate window border with application name
+	osgViewer::ViewerBase::Windows wins;
+	osgViewer_->getWindows(wins);
+	if (wins.size() > 0)
+	{
+		wins[0]->setWindowName("esmini - " + FileNameWithoutExtOf(arguments.getApplicationName()));
+	}
 
 	// Load shadow geometry - assume it resides in the same resource folder as the environment model
 	std::string shadowFilename = DirNameOf(modelFilename).append("/" + std::string(SHADOW_MODEL_FILEPATH));
@@ -751,6 +758,7 @@ Viewer::Viewer(roadmanager::OpenDrive *odrManager, const char *modelFilename, co
 	SetInfoTextProjection(context->getTraits()->width, context->getTraits()->height);
 
 	rootnode_->addChild(infoTextCamera);
+
 }
 
 Viewer::~Viewer()
