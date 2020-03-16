@@ -33,6 +33,14 @@
 
 #define SENSOR_NODE_MASK 0x00000001
 
+extern double color_green[3];
+extern double color_gray[3];
+extern double color_dark_gray[3];
+extern double color_red[3];
+extern double color_blue[3];
+extern double color_yellow[3];
+extern double color_white[3];
+
 using namespace scenarioengine;
 
 namespace viewer
@@ -137,6 +145,9 @@ namespace viewer
 		osg::ref_ptr<osg::Geometry> line_;
 		osg::ref_ptr<osg::Vec3Array> line_vertex_data_;
 
+		osg::Vec3 pivot_pos;
+		osg::Vec3 target_pos;
+
 		PointSensor(): line_(0), line_vertex_data_(0), ball_(0) {}
 	};
 
@@ -212,10 +223,12 @@ namespace viewer
 		~Viewer();
 		void SetCameraMode(int mode);
 		void SetVehicleInFocus(int idx);
-		CarModel* AddCar(std::string modelFilepath, bool transparent, osg::Vec3 trail_color);
+		CarModel* AddCar(std::string modelFilepath, bool transparent, osg::Vec3 trail_color, bool road_sensor);
 		int AddEnvironment(const char* filename);
 		osg::ref_ptr<osg::LOD> LoadCarModel(const char *filename);
-		void UpdateSensor(PointSensor *sensor, roadmanager::Position *pivot_pos, double target_pos[3]);
+		void UpdateSensor(PointSensor *sensor);
+		void SensorSetPivotPos(PointSensor *sensor, double x, double y, double z);
+		void SensorSetTargetPos(PointSensor *sensor, double x, double y, double z);
 		void UpdateRoadSensors(PointSensor *road_sensor, PointSensor *lane_sensor, roadmanager::Position *pos);
 		void setKeyUp(bool pressed) { keyUp_ = pressed; }
 		void setKeyDown(bool pressed) { keyDown_ = pressed; }
@@ -233,7 +246,7 @@ namespace viewer
 		void ShowInfoText(bool show);
 		void ShowTrail(bool show);
 		void ShowObjectSensors(bool show);
-		PointSensor* CreateSensor(int color[], bool create_ball, bool create_line, double ball_radius, double line_width);
+		PointSensor* CreateSensor(double color[], bool create_ball, bool create_line, double ball_radius, double line_width);
 		bool CreateRoadSensors(CarModel *vehicle_model);
 
 	private:

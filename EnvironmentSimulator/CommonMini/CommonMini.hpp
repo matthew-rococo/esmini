@@ -49,7 +49,7 @@
 // Time functions
 __int64 SE_getSystemTime();
 void SE_sleep(unsigned int msec);
-
+double SE_getSimTimeStep(__int64 &time_stamp, double min_time_step, double max_time_step);
 
 // Useful operations
 

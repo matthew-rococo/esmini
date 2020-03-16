@@ -23,9 +23,7 @@
 
 using namespace scenarioengine;
 
-static double color_dark_gray[] = { 0.5, 0.5, 0.5 };
-static double color_yellow[] = { 0.55, 0.46, 0.4 };
-static double color_red[] = { 0.6, 0.2, 0.2 };
+#define GHOST_HEADSTART 5.0
 
 void log_callback(const char *str)
 {
@@ -44,7 +42,6 @@ std::string ScenarioPlayer::RequestControlMode2Str(RequestControlMode mode)
 ScenarioPlayer::ScenarioPlayer(int argc, char *argv[]) : 
 	maxStepSize(0.1), minStepSize(0.01), trail_dt(0.5)
 {
-	simTime = 0.0;
 	quit_request = false;
 	threads = false;
 
@@ -66,46 +63,33 @@ ScenarioPlayer::~ScenarioPlayer()
 	delete scenarioEngine;
 }
 
-void ScenarioPlayer::Frame()
+void ScenarioPlayer::Frame(double timestep_s)
 {
 	if (!threads)
 	{
-		ScenarioFrame();
+		ScenarioFrame(timestep_s);
 	}
 	ViewerFrame();
 }
 
-void ScenarioPlayer::ScenarioFrame()
+void ScenarioPlayer::Frame()
 {
-	static __int64 lastTimeStamp = 0;
-	double deltaSimTime;
-	__int64 now;
+	static __int64 time_stamp = 0;
 
-	// Get milliseconds since Jan 1 1970
-	now = SE_getSystemTime();
-	deltaSimTime = (now - lastTimeStamp) / 1000.0;  // step size in seconds
-	lastTimeStamp = now;
-	double adjust = 0;
+	Frame(SE_getSimTimeStep(time_stamp, minStepSize, maxStepSize));
+}
 
-	if (deltaSimTime > maxStepSize) // limit step size
+void ScenarioPlayer::ScenarioFrame(double timestep_s)
+{
+	for (size_t i = 0; i < sensor.size(); i++)
 	{
-		adjust = -(deltaSimTime - maxStepSize);
+		sensor[i]->Update();
+		//LOG("sensor identified %d objects", sensor[i]->nObj_);
 	}
-	else if (deltaSimTime < minStepSize)  // avoid CPU rush, sleep for a while
-	{
-		adjust = minStepSize - deltaSimTime;
-		SE_sleep(adjust * 1000);
-		lastTimeStamp += adjust * 1000;
-	}
-
-	deltaSimTime += adjust;
-
-	// Time operations
-	simTime = simTime + deltaSimTime;
 
 	mutex.Lock();
 
-	scenarioEngine->step(deltaSimTime);
+	scenarioEngine->step(timestep_s);
 	//LOG("%d %d %.2f h: %.5f road_h %.5f h_relative_road %.5f",
 	//    scenarioEngine->entities.object_[0]->pos_.GetTrackId(),
 	//    scenarioEngine->entities.object_[0]->pos_.GetLaneId(),
@@ -122,10 +106,10 @@ void ScenarioPlayer::ViewerFrame()
 	static double last_dot_time = 0;
 
 	bool add_dot = false;
-	if (simTime - last_dot_time > trail_dt)
+	if (scenarioEngine->getSimulationTime() - last_dot_time > trail_dt)
 	{
 		add_dot = true;
-		last_dot_time = simTime;
+		last_dot_time = scenarioEngine->getSimulationTime();
 	}
 
 	mutex.Lock();
@@ -135,21 +119,63 @@ void ScenarioPlayer::ViewerFrame()
 	{
 		viewer::CarModel *car = viewer_->cars_[i];
 		Object *obj = scenarioEngine->entities.object_[i];
-		roadmanager::Position pos = scenarioEngine->entities.object_[i]->pos_;
+		roadmanager::Position pos = obj->pos_;
 
 		car->SetPosition(pos.GetX(), pos.GetY(), pos.GetZ());
 		car->SetRotation(pos.GetH(), pos.GetP(), pos.GetR());
 		car->UpdateWheels(obj->wheel_angle_, obj->wheel_rot_);
 
+
+		if (obj->GetControl() == Object::Control::EXTERNAL ||
+			obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
+		{
+
+			if (obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
+			{
+				viewer_->SensorSetPivotPos(car->speed_sensor_, obj->pos_.GetX(), obj->pos_.GetY(), obj->pos_.GetZ());
+				viewer_->UpdateSensor(car->speed_sensor_);
+				viewer_->SensorSetPivotPos(car->steering_sensor_, obj->pos_.GetX(), obj->pos_.GetY(), obj->pos_.GetZ());
+				viewer_->UpdateSensor(car->steering_sensor_);
+
+				double closest_pos[3];
+				if (obj->ghost_->trail_.FindClosestPoint(pos.GetX(), pos.GetY(), closest_pos[0], closest_pos[1],
+					obj->trail_follow_s_, obj->trail_follow_index_, obj->trail_follow_index_) == 0)
+				{
+					closest_pos[2] = obj->pos_.GetZ();
+				}
+				else
+				{
+					// Failed find point along trail, copy entity position
+					closest_pos[0] = obj->pos_.GetX();
+					closest_pos[1] = obj->pos_.GetY();
+					closest_pos[2] = obj->pos_.GetZ();
+				}
+				viewer_->SensorSetPivotPos(car->trail_sensor_, closest_pos[0], closest_pos[1], closest_pos[2]);
+				viewer_->SensorSetTargetPos(car->trail_sensor_, pos.GetX(), pos.GetY(), pos.GetZ());
+				viewer_->UpdateSensor(car->trail_sensor_);
+			}
+			else if (odr_manager->GetNumOfRoads() > 0 && obj->GetControl() == Object::Control::EXTERNAL)
+			{
+				viewer_->UpdateRoadSensors(car->road_sensor_, car->lane_sensor_, &pos);
+			}
+		}
+
 		if (add_dot)
 		{
-			car->trail_->AddDot(simTime, obj->pos_.GetX(), obj->pos_.GetY(), obj->pos_.GetZ(), obj->pos_.GetH());
+			car->trail_->AddDot(scenarioEngine->getSimulationTime(), pos.GetX(), pos.GetY(), pos.GetZ(), pos.GetH());
 		}
+
+	}
+
+	for (size_t i = 0; i < sensorFrustum.size(); i++)
+	{
+		sensorFrustum[i]->Update();
 	}
 
 	// Update info text 
 	static char str_buf[128];
-	snprintf(str_buf, sizeof(str_buf), "%.2fs %.2fkm/h", simTime, 3.6 * scenarioEngine->entities.object_[viewer_->currentCarInFocus_]->speed_);
+	snprintf(str_buf, sizeof(str_buf), "%.2fs %.2fkm/h", scenarioEngine->getSimulationTime(), 
+		3.6 * scenarioEngine->entities.object_[viewer_->currentCarInFocus_]->speed_);
 	viewer_->SetInfoText(str_buf);
 
 	mutex.Unlock();
@@ -164,10 +190,11 @@ void ScenarioPlayer::ViewerFrame()
 void scenario_thread(void *args)
 {
 	ScenarioPlayer *player = (ScenarioPlayer*)args;
+	__int64 time_stamp = 0;
 
 	while (!player->IsQuitRequested())
 	{
-		player->ScenarioFrame();
+		player->ScenarioFrame(SE_getSimTimeStep(time_stamp, player->minStepSize, player->maxStepSize));
 	}
 }
 
@@ -186,8 +213,12 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 	arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName() + " [options]\n");
 	arguments.getApplicationUsage()->addCommandLineOption("--osc <filename>", "OpenSCENARIO filename");
 	arguments.getApplicationUsage()->addCommandLineOption("--control <mode>", "Ego control (\"osc\", \"internal\", \"external\", \"hybrid\"");
+	arguments.getApplicationUsage()->addCommandLineOption("--record <file.dat>", "Record position data into a file for later replay");
 	arguments.getApplicationUsage()->addCommandLineOption("--info_text <mode>", "Show info text HUD (\"on\" (default), \"off\") (toggle during simulation by press 't') ");
 	arguments.getApplicationUsage()->addCommandLineOption("--trails <mode>", "Show trails (\"on\" (default), \"off\") (toggle during simulation by press 't') ");
+	arguments.getApplicationUsage()->addCommandLineOption("--sensors <mode>", "Show sensor frustums (\"on\", \"off\" (default)) (toggle during simulation by press 'r') ");
+	arguments.getApplicationUsage()->addCommandLineOption("--camera_mode <mode>", "Initial camera mode (\"orbit\" (default), \"fixed\", \"flex\", \"flex-orbit\") (toggle during simulation by press 'c') ");
+	arguments.getApplicationUsage()->addCommandLineOption("--aa_mode <mode>", "Anti-alias mode=number of multisamples (subsamples, 0=off, 4=default)");
 	arguments.getApplicationUsage()->addCommandLineOption("--threads", "Run viewer and scenario in separate threads");
 
 	if (arguments.argc() < 2)
@@ -195,9 +226,6 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 		arguments.getApplicationUsage()->write(std::cout, 1, 80, true);
 		return -1;
 	}
-
-	std::string oscFilename;
-	arguments.read("--osc", oscFilename);
 
 	RequestControlMode control;
 	arguments.read("--control", arg_str);
@@ -220,7 +248,8 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 	// Create scenario engine
 	try
 	{
-		scenarioEngine = new ScenarioEngine(oscFilename, 1.0, (ScenarioEngine::RequestControlMode)control);
+		arguments.read("--osc", arg_str);
+		scenarioEngine = new ScenarioEngine(arg_str, GHOST_HEADSTART, (ScenarioEngine::RequestControlMode)control);
 	}
 	catch (std::logic_error &e)
 	{
@@ -228,9 +257,10 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 		return -1;
 	}
 
-	// ScenarioGateway
-	ScenarioGateway *scenarioGateway = scenarioEngine->getScenarioGateway();
-
+	// Fetch scenario gateway and OpenDRIVE manager objects
+	scenarioGateway = scenarioEngine->getScenarioGateway();
+	odr_manager = scenarioEngine->getRoadManager();
+	
 	// Create a data file for later replay?
 	if (arguments.read("--record", arg_str))
 	{
@@ -260,6 +290,34 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 		viewer_->ShowTrail(false);
 	}
 
+	arguments.read("--sensors", arg_str);
+	if (arg_str == "on")
+	{
+		viewer_->ShowObjectSensors(true);
+	}
+
+	arguments.read("--camera_mode", arg_str);
+	if (arg_str == "orbit")
+	{
+		viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_ORBIT);
+	}
+	else if (arg_str == "fixed")
+	{
+		viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_FIXED);
+	}
+	else if (arg_str == "flex")
+	{
+		viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_RUBBER_BAND);
+	}
+	else if (arg_str == "flex-orbit")
+	{
+		viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_RUBBER_BAND_ORBIT);
+	}
+	else if (arg_str != "")
+	{
+		LOG("Unsupported camera mode: %s - using default (orbit)", arg_str.c_str());
+	}
+
 	//  Create cars for visualization
 	for (size_t i = 0; i < scenarioEngine->entities.object_.size(); i++)
 	{
@@ -281,11 +339,34 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 		}
 
 		bool transparent = obj->control_ == Object::Control::HYBRID_GHOST ? true : false;
-		if (viewer_->AddCar(obj->model_filepath_, transparent, trail_color) == 0)
+		bool road_sensor = obj->control_ == Object::Control::HYBRID_GHOST || obj->control_ == Object::Control::EXTERNAL ? true : false;
+		if (viewer_->AddCar(obj->model_filepath_, transparent, trail_color, road_sensor) == 0)
 		{
 			delete viewer_;
 			viewer_ = 0;
 			return -1;
+		}
+
+		// Add sensor frustum
+		if (obj->GetControl() == Object::Control::EXTERNAL ||
+			obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
+		{
+			roadmanager::Position *pos = &obj->pos_;
+
+			// Add sensor
+			sensor.push_back(new ObjectSensor(&scenarioEngine->entities, scenarioEngine->entities.object_[i], 4, 0, 0.5, 5, 50, 50 * M_PI / 180.0, 10));
+			sensorFrustum.push_back(new viewer::SensorViewFrustum(sensor.back(), viewer_->cars_.back()->txNode_));
+		}
+
+
+		if (obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
+		{
+			viewer_->cars_.back()->steering_sensor_ = viewer_->CreateSensor(color_green, true, true, 0.4, 3);
+			if (odr_manager->GetNumOfRoads() > 0)
+			{
+				viewer_->cars_.back()->speed_sensor_ = viewer_->CreateSensor(color_gray, true, true, 0.4, 1);
+				viewer_->cars_.back()->trail_sensor_ = viewer_->CreateSensor(color_red, true, false, 0.4, 3);
+			}
 		}
 	}
 

@@ -19,6 +19,7 @@
 #include "RoadManager.hpp"
 #include "CommonMini.hpp"
 #include "Server.hpp"
+#include "IdealSensor.hpp"
 
 using namespace scenarioengine;
 
@@ -36,21 +37,25 @@ public:
 	ScenarioPlayer(int argc, char *argv[]);
 	~ScenarioPlayer();
 	bool IsQuitRequested() { return quit_request; }
-	void Frame();
-	void ScenarioFrame();
+	void Frame();  // let player calculate actual time step
+	void Frame(double timestep_s);
+	void ScenarioFrame(double timestep_s);
+
+	ScenarioEngine *scenarioEngine;
+	ScenarioGateway *scenarioGateway;
+	viewer::Viewer *viewer_;
+	roadmanager::OpenDrive *odr_manager;
+	std::vector<ObjectSensor*> sensor;
+	std::vector<viewer::SensorViewFrustum*> sensorFrustum;
+	const double maxStepSize;
+	const double minStepSize;
 
 private:
-
 	std::string RequestControlMode2Str(RequestControlMode mode);
 	void ViewerFrame();
 	int Init(int argc, char *argv[]);
 
-	const double maxStepSize;
-	const double minStepSize;
 	const double trail_dt;
-	double simTime;
-	ScenarioEngine *scenarioEngine;
-	viewer::Viewer *viewer_;
 	SE_Thread thread;
 	SE_Mutex mutex;
 	bool quit_request;

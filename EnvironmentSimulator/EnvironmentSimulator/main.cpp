@@ -16,11 +16,7 @@
   * Instead of linking with the ScenarioEngineDLL it links all needed library functions statically into the 
   * all-inclusive executable.
   *
-  * The Viewer is driven in a separate thread to enable camera movement even if simulation is paused.
-  *
-  * A simpler solution is to move the Viewer handling to the main loop, i.e:
-  *   Creation of Viewer and Vehicles visual models should be done after scenario engine initialization
-  *   Vehicle position update and Viewer->frame() call part of the main loop.
+  * The Viewer is optionally (--threads) driven in a separate thread to enable camera movement even if simulation is paused.
   */
 
 #include "playerbase.hpp"
@@ -50,5 +46,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-

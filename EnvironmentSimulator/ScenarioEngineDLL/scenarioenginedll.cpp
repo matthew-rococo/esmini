@@ -216,8 +216,8 @@ void viewer_thread(void*)
 
 				if (scenarioEngine->entities.object_[i]->GetControl() == Object::Control::HYBRID_EXTERNAL)
 				{
-					new_sc.carModel->speed_sensor_ = scViewer->CreateSensor(COLOR_GRAY, true, true, 0.4, 1.0);
-					new_sc.carModel->steering_sensor_ = scViewer->CreateSensor(COLOR_GREEN, false, true, 0.2, 3.0);
+					new_sc.carModel->speed_sensor_ = scViewer->CreateSensor(color_gray, true, true, 0.4, 1.0);
+					new_sc.carModel->steering_sensor_ = scViewer->CreateSensor(color_green, false, true, 0.2, 3.0);
 				}
 				else if (scenarioEngine->entities.object_[i]->GetControl() == Object::Control::EXTERNAL)
 				{

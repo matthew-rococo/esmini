@@ -27,10 +27,10 @@ add_definitions(-DOSG_LIBRARY_STATIC)
 
 target_link_libraries ( 
 	${TARGET}
+	PlayerBase
 	ScenarioEngine
 	RoadManager
 	ViewerBase
-	PlayerBase
 	CommonMini
 	${OSG_LIBRARIES}
 	${TIME_LIB}

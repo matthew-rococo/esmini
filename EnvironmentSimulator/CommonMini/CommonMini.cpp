@@ -289,6 +289,31 @@ void SwapByteOrder(unsigned char *buf, int data_type_size, int buf_size)
 
 #endif
 
+double SE_getSimTimeStep(__int64 &time_stamp, double min_time_step, double max_time_step)
+{
+	double dt;
+	double adjust = 0;
+	__int64 now = SE_getSystemTime();
+
+	dt = (now - time_stamp) * 0.001;  // step size in seconds
+
+	if (dt > max_time_step) // limit step size
+	{
+		dt = max_time_step;
+	}
+	else if (dt < min_time_step)  // avoid CPU rush, sleep for a while
+	{
+		SE_sleep((int)(min_time_step - dt) * 1000);
+		now = SE_getSystemTime();
+		dt = (now - time_stamp) * 0.001;
+	}
+
+	time_stamp = now;
+
+	return dt;
+}
+
+
 std::string DirNameOf(const std::string& fname)
 {
 	size_t pos = fname.find_last_of("\\/");
