@@ -191,6 +191,7 @@ private:
 };
 
 
+std::vector<std::string> SplitString(const std::string &s, char separator);
 std::string DirNameOf(const std::string& fname);
 std::string FileNameOf(const std::string& fname);
 std::string FileNameWithoutExtOf(const std::string& fname);

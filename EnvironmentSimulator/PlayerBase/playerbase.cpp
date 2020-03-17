@@ -53,6 +53,7 @@ ScenarioPlayer::ScenarioPlayer(int argc, char *argv[]) :
 
 ScenarioPlayer::~ScenarioPlayer()
 {
+	LOG("");
 	if (scenarioEngine->entities.object_[0]->GetControl() == Object::Control::EXTERNAL ||
 		scenarioEngine->entities.object_[0]->GetControl() == Object::Control::HYBRID_EXTERNAL)
 	{
@@ -196,6 +197,13 @@ void scenario_thread(void *args)
 	{
 		player->ScenarioFrame(SE_getSimTimeStep(time_stamp, player->minStepSize, player->maxStepSize));
 	}
+}
+
+void ScenarioPlayer::AddObjectSensor(int object_index, double pos_x, double pos_y, double pos_z, double near, double far, double fovH, int maxObj)
+{
+	sensor.push_back(new ObjectSensor(&scenarioEngine->entities, scenarioEngine->entities.object_[object_index], 
+		pos_x, pos_y, pos_z, near, far, fovH, maxObj));
+	sensorFrustum.push_back(new viewer::SensorViewFrustum(sensor.back(), viewer_->cars_[object_index]->txNode_));
 }
 
 int ScenarioPlayer::Init(int argc, char *argv[])
@@ -354,8 +362,7 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 			roadmanager::Position *pos = &obj->pos_;
 
 			// Add sensor
-			sensor.push_back(new ObjectSensor(&scenarioEngine->entities, scenarioEngine->entities.object_[i], 4, 0, 0.5, 5, 50, 50 * M_PI / 180.0, 10));
-			sensorFrustum.push_back(new viewer::SensorViewFrustum(sensor.back(), viewer_->cars_.back()->txNode_));
+			AddObjectSensor(i, 4, 0, 0.5, 5, 50, 50 * M_PI / 180.0, 10);
 		}
 
 

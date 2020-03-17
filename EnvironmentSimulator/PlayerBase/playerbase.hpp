@@ -40,6 +40,7 @@ public:
 	void Frame();  // let player calculate actual time step
 	void Frame(double timestep_s);
 	void ScenarioFrame(double timestep_s);
+	void AddObjectSensor(int object_index, double pos_x, double pos_y, double pos_z, double near, double far, double fovH, int maxObj);
 
 	ScenarioEngine *scenarioEngine;
 	ScenarioGateway *scenarioGateway;
