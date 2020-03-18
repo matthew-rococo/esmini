@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	for (int a = 0; a < 1; a++)
 	{
 
-		if (SE_Init(argv[1], 1, 1, 0, 0.2f) != 0)
+		if (SE_Init(argv[1], 3, 1, 0, 0.2f) != 0)
 		{
 			LOG("Failed to load %s", argv[1]);
 			return -1;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	
 		for (int i = 0; i < 400; i++)
 		{
-			if (SE_Step(TIME_STEP) != 0)
+			if (SE_StepDT(TIME_STEP) != 0)
 			{
 				return 0;
 			}

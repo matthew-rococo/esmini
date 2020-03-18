@@ -40,7 +40,7 @@ std::string ScenarioPlayer::RequestControlMode2Str(RequestControlMode mode)
 }
 
 ScenarioPlayer::ScenarioPlayer(int argc, char *argv[]) : 
-	maxStepSize(0.1), minStepSize(0.01), trail_dt(0.5)
+	maxStepSize(0.1), minStepSize(0.01), trail_dt(TRAIL_DOTS_DT)
 {
 	quit_request = false;
 	threads = false;
@@ -104,7 +104,7 @@ void ScenarioPlayer::ScenarioFrame(double timestep_s)
 
 void ScenarioPlayer::ViewerFrame()
 {
-	static double last_dot_time = 0;
+	static double last_dot_time = scenarioEngine->getSimulationTime();
 
 	bool add_dot = false;
 	if (scenarioEngine->getSimulationTime() - last_dot_time > trail_dt)
@@ -335,7 +335,7 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 
 		if (obj->control_ == Object::Control::HYBRID_GHOST)
 		{
-			trail_color.set(color_dark_gray[0], color_dark_gray[1], color_dark_gray[2]);
+			trail_color.set(color_gray[0], color_gray[1], color_gray[2]);
 		}
 		else if (obj->control_ == Object::Control::HYBRID_EXTERNAL || obj->control_ == Object::Control::EXTERNAL)
 		{

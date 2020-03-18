@@ -20,7 +20,6 @@ using namespace scenarioengine;
 
 static ScenarioPlayer *player = 0;
 
-//static char *args[] = { (char*)"kalle", (char*)"--window", (char*)"50", (char*)"50", (char*)"1000", (char*)"500", (char*)"--osc", (char*)"../../../../resources/xosc/ltap-od.xosc"};
 static char **argv;
 static int argc = 0;
 static std::vector<std::string> args_v;
@@ -233,10 +232,10 @@ extern "C"
 			player = new ScenarioPlayer(argc, argv);
 
 			// Fast forward to time == 0 - launching hybrid ghost vehicles
-			while (player->scenarioEngine->getSimulationTime() < 0)
-			{
-				player->scenarioEngine->step(0.05);
-			}
+			//while (player->scenarioEngine->getSimulationTime() < 0)
+			//{
+			//	player->Frame(0.05);
+			//}
 
 		}
 		catch (const std::exception& e)
@@ -254,11 +253,21 @@ extern "C"
 		resetScenario();
 	}
 
-	SE_DLL_API int SE_Step(float dt)
+	SE_DLL_API int SE_Step()
 	{
 		if (player)
 		{
 			player->Frame();
+		}
+
+		return 0;
+	}
+
+	SE_DLL_API int SE_StepDT(float dt)
+	{
+		if (player)
+		{
+			player->Frame(dt);
 		}
 
 		return 0;

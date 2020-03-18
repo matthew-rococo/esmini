@@ -44,7 +44,7 @@
 double color_green[3] = { 0.25, 0.6, 0.3 };
 double color_gray[3] = { 0.7, 0.7, 0.7 };
 double color_dark_gray[3] = { 0.5, 0.5, 0.5 };
-double color_red[3] = { 0.6, 0.2, 0.2 };
+double color_red[3] = { 0.73, 0.26, 0.26 };
 double color_blue[3] = { 0.25, 0.38, 0x7 };
 double color_yellow[3] = { 0.75, 0.7, 0.4 };
 double color_white[3] = { 0.80, 0.80, 0.79 };
@@ -290,7 +290,7 @@ void AlphaFadingCallback::operator()(osg::StateAttribute* sa, osg::NodeVisitor* 
 		time_stamp_ = viewer_->elapsedTime();
 		if (age > TRAIL_DOT_LIFE_SPAN)
 		{
-			_motion->update(dt);  // assume 30 fps. Todo: replace with actual time
+			_motion->update(dt);  
 		}
 		color_[3] = 1 - _motion->getValue();
 		material->setDiffuse(osg::Material::FRONT_AND_BACK, color_);

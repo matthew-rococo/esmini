@@ -28,8 +28,9 @@
 #include "CommonMini.hpp"
 
 #define TRAIL_DOT_FADE_DURATION 3.0  // seconds
-#define TRAIL_MAX_DOTS 500
-#define TRAIL_DOT_LIFE_SPAN (TRAIL_MAX_DOTS / 2.0 - 2.0 * TRAIL_DOT_FADE_DURATION ) // seconds
+#define TRAIL_DOTS_DT 0.5
+#define TRAIL_MAX_DOTS 50
+#define TRAIL_DOT_LIFE_SPAN (0.5 * TRAIL_MAX_DOTS * TRAIL_DOTS_DT) // Start fade when half of the dots have been launched (seconds)
 
 #define SENSOR_NODE_MASK 0x00000001
 
