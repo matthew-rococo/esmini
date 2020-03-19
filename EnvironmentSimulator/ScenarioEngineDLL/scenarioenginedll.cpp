@@ -10,7 +10,7 @@
  * https://sites.google.com/view/simulationscenarios
  */
 
-#include "PlayerBase.hpp"
+#include "playerbase.hpp"
 #include "scenarioenginedll.hpp"
 #include "IdealSensor.hpp"
 
@@ -20,7 +20,7 @@ using namespace scenarioengine;
 
 static ScenarioPlayer *player = 0;
 
-static char **argv;
+static char **argv = 0;
 static int argc = 0;
 static std::vector<std::string> args_v;
 
@@ -30,6 +30,17 @@ static void resetScenario(void)
 	{
 		delete player;
 		player = 0;
+	}
+	args_v.clear();
+	if (argv)
+	{
+		for (int i = 0; i < argc; i++)
+		{
+			free(argv[i]);
+		}
+		free(argv);
+		argv = 0;
+		argc = 0;
 	}
 }
 
@@ -46,12 +57,13 @@ static void AddArgument(const char *str)
 
 static void ConvertArguments()
 {
-	argc = args_v.size();
+	argc = (int)args_v.size();
 	argv = (char**)malloc(argc * sizeof(char*));
 	for (int i = 0; i < argc; i++)
 	{
 		argv[i] = (char*)malloc((args_v[i].size() + 1) * sizeof(char));
 		strcpy(argv[i], args_v[i].c_str());
+		LOG("arg[%d]: %s", i, argv[i]);
 	}
 }
 
@@ -158,7 +170,7 @@ static int GetRoadInfoAlongGhostTrail(int object_id, float lookahead_distance, S
 	}
 
 	ObjectTrailState state;
-	state.h_ = obj->pos_.GetH();  // Set default trail heading aligned with road - in case trail is less than two points (no heading)
+	state.h_ = (float)obj->pos_.GetH();  // Set default trail heading aligned with road - in case trail is less than two points (no heading)
 	obj->ghost_->trail_.FindPointAhead(obj->trail_follow_index_, obj->trail_follow_s_, lookahead_distance, state, index_out, s_out);
 
 	roadmanager::Position pos(state.x_, state.y_, 0, 0, 0, 0);
@@ -194,7 +206,7 @@ extern "C"
 #ifndef _SCENARIO_VIEWER
 		if (use_viewer)
 		{
-			LOG("use_viewer flag set, but no viewer available (compiled without -D _SCENARIO_VIEWWER");
+			LOG("use_viewer flag set, but no viewer available (compiled without -D _SCENARIO_VIEWER");
 		}
 #endif	
 
@@ -221,6 +233,10 @@ extern "C"
 		if (record)
 		{
 			AddArgument("--record scenario.dat");
+		}
+		if (!use_viewer)
+		{
+			AddArgument("--headless");
 		}
 		AddArgument("--window 30 30 800 400");
 		ConvertArguments();
