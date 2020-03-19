@@ -544,134 +544,104 @@ void SE_Mutex::Unlock()
 #endif
 }
 
-#define OPT_PREFIX "--"
 
-
-class SE_Options
+void SE_Option::Usage()
 {
-public:
-	SE_Options() {}
+	LOG("  %s%s %s", OPT_PREFIX, opt_str_.c_str(), opt_arg_ != "" ? '<'+ opt_arg_ +'>' : "");
+	LOG("\n      %s\n", opt_desc_.c_str());
+}
 
-	void AddOption(std::string opt_str, std::string opt_desc, std::string opt_arg = "")
-	{
-		Option opt(opt_str, opt_desc, opt_arg);
-		option_.push_back(opt);
-	};
 
-	void PrintUsage()
+void SE_Options::AddOption(std::string opt_str, std::string opt_desc, std::string opt_arg)
+{
+	SE_Option opt(opt_str, opt_desc, opt_arg);
+	option_.push_back(opt);
+};
+
+void SE_Options::PrintUsage()
+{
+	LOG("Usage %s: [options]", app_name_.c_str());
+	LOG("Options: ");
+	for (size_t i = 0; i < option_.size(); i++)
 	{
-		printf("Usage %s: [options]\n", app_name_.c_str());
-		printf("Options: \n");
-		for (size_t i = 0; i < option_.size(); i++)
-		{
-			option_[i].Usage();
-		}
+		option_[i].Usage();
 	}
+}
 
-	bool GetOptionSet(std::string opt)
+bool SE_Options::GetOptionSet(std::string opt)
+{
+	SE_Option *option = GetOption(opt);
+
+	if (option)
 	{
-		Option *option = GetOption(opt);
+		return option->set_;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+std::string SE_Options::GetOptionArg(std::string opt)
+{
+	SE_Option *option = GetOption(opt);
+
+	if (option && option->opt_arg_ != "")
+	{
+		return option->arg_value_;
+	}
+	else
+	{
+		return "";
+	}
+}
+
+void SE_Options::ParseArgs(int argc, char* argv[])
+{
+	std::string app_name = argv[0];
+
+	for (size_t i = 1; i < argc; i++)
+	{
+		std::string arg = argv[i];
+
+		if (!(arg.substr(0, strlen(OPT_PREFIX)) == OPT_PREFIX))
+		{
+			LOG("Argument parser error: Option %s not recognized, should be prefixed by \"%s\"", argv[i], OPT_PREFIX);
+			continue;
+		}
+
+		SE_Option *option = GetOption(&argv[i][strlen(OPT_PREFIX)]); // skip prefix
 
 		if (option)
 		{
-			return option->set_;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	std::string GetOptionArg(std::string opt)
-	{
-		Option *option = GetOption(opt);
-
-		if (option && option->opt_arg_ != "")
-		{
-			return option->arg_value_;
-		}
-		else
-		{
-			return "";
-		}
-	};
-
-	void ParseArgs(int argc, char* argv[])
-	{
-		std::string app_name = argv[0];
-
-		for (size_t i = 1; i < argc; i++)
-		{
-			std::string arg = argv[i];
-
-			if (!(arg.substr(0, strlen(OPT_PREFIX)) == OPT_PREFIX))
+			option->set_ = true;
+			if (option->opt_arg_ != "")
 			{
-				printf("Argument parser error: Option %s not recognized, should be prefixed by \"%s\"\n", argv[i], OPT_PREFIX);
-				continue;
-			}
-
-			Option *option = GetOption(&argv[i][strlen(OPT_PREFIX)]); // skip prefix
-
-			if (option)
-			{
-				option->set_ = true;
-				if (option->opt_arg_ != "")
+				if (i < argc - 1)
 				{
-					if (i < argc - 1)
-					{
-						option->arg_value_ = argv[++i];
-					}
-					else
-					{
-						printf("Argument parser error: Missing option %s argument\n", option->opt_str_.c_str());
-					}
+					option->arg_value_ = argv[++i];
+				}
+				else
+				{
+					LOG("Argument parser error: Missing option %s argument", option->opt_str_.c_str());
 				}
 			}
-			else
-			{
-				printf("Argument parser error: Option %s not supoprted\n", argv[i]);
-			}
 		}
-	};
-
-private:
-
-	class Option
-	{
-	public:
-		std::string opt_str_;
-		std::string opt_desc_;
-		std::string opt_arg_;
-		bool set_;
-		std::string arg_value_;
-
-		Option(std::string opt_str, std::string opt_desc, std::string opt_arg = "") :
-			opt_str_(opt_str), opt_desc_(opt_desc), opt_arg_(opt_arg), set_(false), arg_value_("") {}
-
-		void Usage()
+		else
 		{
-			printf("  %s%s", OPT_PREFIX, opt_str_.c_str());
-			if (opt_arg_ != "")
-			{
-				printf(" <%s>", opt_arg_.c_str());
-			}
-			printf("\n      %s\n", opt_desc_.c_str());
+			LOG("Argument parser error: Option %s not supported", argv[i]);
 		}
-	};
+	}
+}
 
-	std::vector<Option> option_;
-	std::string app_name_;
-
-	Option *GetOption(std::string opt)
+SE_Option* SE_Options::GetOption(std::string opt)
+{
+	for (size_t i = 0; i < option_.size(); i++)
 	{
-		for (size_t i = 0; i < option_.size(); i++)
+		if (opt == option_[i].opt_str_)
 		{
-			if (opt == option_[i].opt_str_)
-			{
-				return &option_[i];
-			}
+			return &option_[i];
 		}
-		return 0;
-	};
-
-};
+	}
+	return 0;
+}

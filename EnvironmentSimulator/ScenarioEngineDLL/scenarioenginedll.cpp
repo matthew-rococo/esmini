@@ -413,13 +413,14 @@ extern "C"
 				LOG("Invalid object_id (%d/%d)", object_id, player->scenarioEngine->entities.object_.size());
 				return -1;
 			}
-
-			for (int i = 0; i < player->sensor[object_id]->nObj_; i++)
+			if (player->sensor.size() > object_id)
 			{
-				list[i] = player->sensor[object_id]->hitList_[i].obj_->id_;
+				for (int i = 0; i < player->sensor[object_id]->nObj_; i++)
+				{
+					list[i] = player->sensor[object_id]->hitList_[i].obj_->id_;
+				}
+				return player->sensor[object_id]->nObj_;
 			}
-
-			return player->sensor[object_id]->nObj_;
 		}
 		return 0;
 	}

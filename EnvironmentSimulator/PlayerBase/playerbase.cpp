@@ -145,7 +145,6 @@ void ScenarioPlayer::ViewerFrame()
 		car->SetRotation(pos.GetH(), pos.GetP(), pos.GetR());
 		car->UpdateWheels(obj->wheel_angle_, obj->wheel_rot_);
 
-
 		if (obj->GetControl() == Object::Control::EXTERNAL ||
 			obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
 		{
@@ -223,7 +222,7 @@ void ScenarioPlayer::AddObjectSensor(int object_index, double pos_x, double pos_
 {
 	sensor.push_back(new ObjectSensor(&scenarioEngine->entities, scenarioEngine->entities.object_[object_index], 
 		pos_x, pos_y, pos_z, near, far, fovH, maxObj));
-	if (!headless)
+ 	if (!headless)
 	{
 #ifdef _SCENARIO_VIEWER
 		sensorFrustum.push_back(new viewer::SensorViewFrustum(sensor.back(), viewer_->cars_[object_index]->txNode_));
@@ -239,54 +238,50 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 	Logger::Inst().SetCallback(log_callback);
 
 	// use an ArgumentParser object to manage the program arguments.
-	osg::ArgumentParser arguments(&argc, argv);
+	SE_Options opt;
+	opt.AddOption("osc", "OpenSCENARIO filename", "filename");
+	opt.AddOption("control", "Ego control (\"osc\", \"internal\", \"external\", \"hybrid\"", "mode");
+	opt.AddOption("record", "Record position data into a file for later replay", "filename");
+	opt.AddOption("info_text", "Show info text HUD (\"on\" (default), \"off\") (toggle during simulation by press 't') ", "mode");
+	opt.AddOption("trails", "Show trails (\"on\" (default), \"off\") (toggle during simulation by press 't') ", "mode");
+	opt.AddOption("sensors", "Show sensor frustums (\"on\", \"off\" (default)) (toggle during simulation by press 'r') ", "mode");
+	opt.AddOption("camera_mode", "Initial camera mode (\"orbit\" (default), \"fixed\", \"flex\", \"flex-orbit\") (toggle during simulation by press 'c') ", "mode");
+	opt.AddOption("aa_mode", "Anti-alias mode=number of multisamples (subsamples, 0=off, 4=default)", "mode");
+	opt.AddOption("threads", "Run viewer and scenario in separate threads");
+	opt.AddOption("headless", "Run without viewer");
+	opt.AddOption("server", "Launch server to receive state of external Ego simulator");
 
-	arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
-	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName());
-	arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName() + " [options]\n");
-	arguments.getApplicationUsage()->addCommandLineOption("--osc <filename>", "OpenSCENARIO filename");
-	arguments.getApplicationUsage()->addCommandLineOption("--control <mode>", "Ego control (\"osc\", \"internal\", \"external\", \"hybrid\"");
-	arguments.getApplicationUsage()->addCommandLineOption("--record <file.dat>", "Record position data into a file for later replay");
-	arguments.getApplicationUsage()->addCommandLineOption("--info_text <mode>", "Show info text HUD (\"on\" (default), \"off\") (toggle during simulation by press 't') ");
-	arguments.getApplicationUsage()->addCommandLineOption("--trails <mode>", "Show trails (\"on\" (default), \"off\") (toggle during simulation by press 't') ");
-	arguments.getApplicationUsage()->addCommandLineOption("--sensors <mode>", "Show sensor frustums (\"on\", \"off\" (default)) (toggle during simulation by press 'r') ");
-	arguments.getApplicationUsage()->addCommandLineOption("--camera_mode <mode>", "Initial camera mode (\"orbit\" (default), \"fixed\", \"flex\", \"flex-orbit\") (toggle during simulation by press 'c') ");
-	arguments.getApplicationUsage()->addCommandLineOption("--aa_mode <mode>", "Anti-alias mode=number of multisamples (subsamples, 0=off, 4=default)");
-	arguments.getApplicationUsage()->addCommandLineOption("--threads", "Run viewer and scenario in separate threads");
-	arguments.getApplicationUsage()->addCommandLineOption("--headless", "Run without viewer");
-	arguments.getApplicationUsage()->addCommandLineOption("--server", "Launch server to receive state of external Ego simulator");
+	opt.ParseArgs(argc, argv);
 
-	if (arguments.argc() < 2)
+	if (argc < 3)
 	{
-		arguments.getApplicationUsage()->write(std::cout, 1, 80, true);
+		opt.PrintUsage();
 		return -1;
 	}
 
-	RequestControlMode control;
-	arguments.read("--control", arg_str);
-	if (arg_str == "osc" || arg_str == "") control = RequestControlMode::CONTROL_BY_OSC;
-	else if (arg_str == "internal") control = RequestControlMode::CONTROL_INTERNAL;
-	else if (arg_str == "external") control = RequestControlMode::CONTROL_EXTERNAL;
-	else if (arg_str == "hybrid") control = RequestControlMode::CONTROL_HYBRID;
-	else
+	RequestControlMode control = RequestControlMode::CONTROL_BY_OSC;
+	if ((arg_str = opt.GetOptionArg("control")) != "")
 	{
-		LOG("Unrecognized external control mode: %s", arg_str.c_str());
-		control = RequestControlMode::CONTROL_BY_OSC;
+		if (arg_str == "osc" || arg_str == "") control = RequestControlMode::CONTROL_BY_OSC;
+		else if (arg_str == "internal") control = RequestControlMode::CONTROL_INTERNAL;
+		else if (arg_str == "external") control = RequestControlMode::CONTROL_EXTERNAL;
+		else if (arg_str == "hybrid") control = RequestControlMode::CONTROL_HYBRID;
+		else LOG("Unrecognized external control mode: %s - defaulting to ", arg_str.c_str());
 	}
 
-	if (arguments.read("--threads"))
+	if (opt.GetOptionSet("threads"))
 	{
 		threads = true;
 		LOG("Run viewer in separate thread");
 	}
 
-	if (arguments.read("--headless"))
+	if (opt.GetOptionSet("headless"))
 	{
 		headless = true;
 		LOG("Run without viewer");
 	}
 
-	if (arguments.read("--server"))
+	if (opt.GetOptionSet("server"))
 	{
 		launch_server = true;
 		LOG("Launch server to receive state of external Ego simulator");
@@ -295,7 +290,7 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 	// Create scenario engine
 	try
 	{
-		arguments.read("--osc", arg_str);
+		arg_str = opt.GetOptionArg("osc");
 		scenarioEngine = new ScenarioEngine(arg_str, GHOST_HEADSTART, (ScenarioEngine::RequestControlMode)control);
 	}
 	catch (std::logic_error &e)
@@ -309,7 +304,7 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 	odr_manager = scenarioEngine->getRoadManager();
 	
 	// Create a data file for later replay?
-	if (arguments.read("--record", arg_str))
+	if ((arg_str = opt.GetOptionArg("record")) != "")
 	{
 		LOG("Recording data to file %s", arg_str.c_str());
 		scenarioGateway->RecordToFile(arg_str, scenarioEngine->getOdrFilename(), scenarioEngine->getSceneGraphFilename());
@@ -318,54 +313,57 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 	// Step scenario engine - zero time - just to reach and report init state of all vehicles
 	scenarioEngine->step(0.0, true);
 
+
 	if (!headless)
 	{
+
 #ifdef _SCENARIO_VIEWER
+
 		// Create viewer
+		osg::ArgumentParser arguments(&argc, argv);
 		viewer_ = new viewer::Viewer(
 			roadmanager::Position::GetOpenDrive(),
 			scenarioEngine->getSceneGraphFilename().c_str(),
 			scenarioEngine->getScenarioFilename().c_str(),
 			arguments);
 
-		arguments.read("--info_text", arg_str);
-		if (arg_str == "off")
+		if (opt.GetOptionArg("info_text") == "off")
 		{
 			viewer_->ShowInfoText(false);
 		}
 
-		arguments.read("--trails", arg_str);
-		if (arg_str == "off")
+		if (opt.GetOptionArg("trails") == "off")
 		{
 			viewer_->ShowTrail(false);
 		}
 
-		arguments.read("--sensors", arg_str);
-		if (arg_str == "on")
+		if (opt.GetOptionArg("sensors") == "on")
 		{
 			viewer_->ShowObjectSensors(true);
 		}
 
-		arguments.read("--camera_mode", arg_str);
-		if (arg_str == "orbit")
+		if ((arg_str = opt.GetOptionArg("camera_mode")) != "")
 		{
-			viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_ORBIT);
-		}
-		else if (arg_str == "fixed")
-		{
-			viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_FIXED);
-		}
-		else if (arg_str == "flex")
-		{
-			viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_RUBBER_BAND);
-		}
-		else if (arg_str == "flex-orbit")
-		{
-			viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_RUBBER_BAND_ORBIT);
-		}
-		else if (arg_str != "")
-		{
-			LOG("Unsupported camera mode: %s - using default (orbit)", arg_str.c_str());
+			if (arg_str == "orbit")
+			{
+				viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_ORBIT);
+			}
+			else if (arg_str == "fixed")
+			{
+				viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_FIXED);
+			}
+			else if (arg_str == "flex")
+			{
+				viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_RUBBER_BAND);
+			}
+			else if (arg_str == "flex-orbit")
+			{
+				viewer_->SetCameraMode(osgGA::RubberbandManipulator::RB_MODE_RUBBER_BAND_ORBIT);
+			}
+			else 
+			{
+				LOG("Unsupported camera mode: %s - using default (orbit)", arg_str.c_str());
+			}
 		}
 
 		//  Create cars for visualization
@@ -397,17 +395,6 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 				return -1;
 			}
 
-			// Add sensor frustum
-			if (obj->GetControl() == Object::Control::EXTERNAL ||
-				obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
-			{
-				roadmanager::Position *pos = &obj->pos_;
-
-				// Add sensor
-				AddObjectSensor(i, 4, 0, 0.5, 5, 50, 50 * M_PI / 180.0, 10);
-			}
-
-
 			if (obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
 			{
 				viewer_->cars_.back()->steering_sensor_ = viewer_->CreateSensor(color_green, true, true, 0.4, 3);
@@ -419,6 +406,18 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 			}
 		}
 #endif
+	}
+
+	// Add sensors
+	for (size_t i = 0; i < scenarioEngine->entities.object_.size(); i++)
+	{
+		Object *obj = scenarioEngine->entities.object_[i];
+
+		if (obj->GetControl() == Object::Control::EXTERNAL ||
+			obj->GetControl() == Object::Control::HYBRID_EXTERNAL)
+		{
+			AddObjectSensor((int)i, 4, 0, 0.5, 5, 50, 50 * M_PI / 180.0, 10);
+		}
 	}
 
 	if (launch_server && (scenarioEngine->entities.object_[0]->GetControl() == Object::Control::EXTERNAL ||
