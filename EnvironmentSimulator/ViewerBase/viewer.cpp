@@ -977,7 +977,7 @@ bool Viewer::CreateRoadLines(roadmanager::OpenDrive* od, osg::Group* parent)
 				}
 				else
 				{
-					lineWidth->setWidth(2.0f);
+					lineWidth->setWidth(1.5f);
 					color->push_back(osg::Vec4(color_blue[0], color_blue[1], color_blue[2], 1.0));
 				}
 
