@@ -1,9 +1,9 @@
 version: 1.3.{build}
 
 image:
-- Visual Studio 2017
-- Visual Studio 2015
-- Ubuntu1804
+#- Visual Studio 2017
+#- Visual Studio 2015
+#- Ubuntu1804
 - macos-mojave
 
 configuration: Release
@@ -85,6 +85,10 @@ for:
           
           zip esmini-bin_mac.zip bin -r
           
+          chmod -R +x ./run/*
+
+          ./generate_binary_dist.sh
+
     artifacts:
       - path: esmini-*_mac.zip
         name: mac_artifacts
