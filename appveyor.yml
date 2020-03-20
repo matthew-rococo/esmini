@@ -1,9 +1,9 @@
 version: 1.3.{build}
 
 image:
-#- Visual Studio 2017
-#- Visual Studio 2015
-#- Ubuntu1804
+- Visual Studio 2017
+- Visual Studio 2015
+- Ubuntu1804
 - macos-mojave
 
 configuration: Release
@@ -13,7 +13,7 @@ platform:
 - x86
 
 cache:
-#- externals/OpenSceneGraph
+- externals/OpenSceneGraph
 - resources/models
     
 # publish package on tag build    
@@ -54,6 +54,8 @@ for:
           chmod -R +x ./run/*
 
           ./generate_binary_dist.sh
+
+          mv esmini-demo.zip esmini-demo_ubuntu.zip 
               
     artifacts:
       - path: esmini-*_ubuntu.zip
@@ -88,6 +90,8 @@ for:
           chmod -R +x ./run/*
 
           ./generate_binary_dist.sh
+
+          mv esmini-demo.zip esmini-demo_mac.zip 
 
     artifacts:
       - path: esmini-*_mac.zip
