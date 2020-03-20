@@ -4,7 +4,7 @@ rm -rf esmini-demo
 
 mkdir esmini-demo
 
-cp -p --parents -r \
+rsync -R \
 resources/xosc/basic_hybrid.xosc \
 resources/xosc/cut-in.xosc \
 resources/xosc/lane_change.xosc \
