@@ -23,7 +23,7 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 
 if (APPLE)
   set ( TIME_LIB "" )
-  set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=1MCUvYLQeb7ZxiwDE5IWKeGOaSdsI83KL )
+  set ( OSG_PACKAGE_URL https://drive.google.com/uc?export=download&id=1yEFOB8HmNP5lPxYD4VJC-ry7XaBG9dsJ )
   set ( OSG_DIR "${OSG_BASE_DIR}/mac" )
 elseif (UNIX)
   set ( TIME_LIB "" )
@@ -61,6 +61,8 @@ set ( OSG_LIBRARIES_PATH
 
 if(APPLE)
   SET(CMAKE_CXX_FLAGS "-std=c++14 -pthread -flto -Wl,-dead_strip -framework OpenGL -framework Cocoa")
+
+  SET( "-framework OpenGL -framework Cocoa")
   
   link_directories(${OSG_LIBRARIES_PATH})
 
@@ -78,7 +80,8 @@ if(APPLE)
 	osgGA
 	osg
 	OpenThreads
-
+	"-framework OpenGL"
+	"-framework Cocoa"
 	dl
 	libz.a
 	#db_fbx
