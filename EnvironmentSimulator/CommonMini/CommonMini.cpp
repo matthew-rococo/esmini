@@ -599,11 +599,14 @@ std::string SE_Options::GetOptionArg(std::string opt)
 
 static void ShiftArgs(int *argc, char** argv, int start_i)
 {
-	for (int i = start_i; i < *argc-1; i++)
+	if (start_i >= 0 && start_i < *argc)
 	{
-		argv[i] = argv[i+1];
+		for (int i = start_i; i < *argc - 1; i++)
+		{
+			argv[i] = argv[i + 1];
+		}
+		(*argc)--;
 	}
-	(*argc)--;
 }
 
 void SE_Options::ParseArgs(int *argc, char* argv[])

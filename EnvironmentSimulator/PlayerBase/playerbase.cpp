@@ -41,7 +41,7 @@ std::string ScenarioPlayer::RequestControlMode2Str(RequestControlMode mode)
 	else return "Unknown";
 }
 
-ScenarioPlayer::ScenarioPlayer(int argc, char *argv[]) : 
+ScenarioPlayer::ScenarioPlayer(int &argc, char *argv[]) : 
 	maxStepSize(0.1), minStepSize(0.01)
 {
 	quit_request = false;
@@ -191,7 +191,6 @@ void ScenarioPlayer::ViewerFrame()
 		{
 			car->trail_->AddDot(scenarioEngine->getSimulationTime(), pos.GetX(), pos.GetY(), pos.GetZ(), pos.GetH());
 		}
-
 	}
 
 	for (size_t i = 0; i < sensorFrustum.size(); i++)
@@ -246,7 +245,7 @@ void ScenarioPlayer::AddObjectSensor(int object_index, double pos_x, double pos_
 	}
 }
 
-int ScenarioPlayer::Init(int argc, char *argv[])
+int ScenarioPlayer::Init(int &argc, char *argv[])
 {
 	std::string arg_str;
 
@@ -428,6 +427,9 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 				}
 			}
 		}
+
+		// Trig first viewer frame, it typically takes extra long due to initial loading of gfx content
+		ViewerFrame();
 #endif
 	}
 
@@ -459,9 +461,6 @@ int ScenarioPlayer::Init(int argc, char *argv[])
 		// Launch UDP server to receive external Ego state
 		StartServer(scenarioEngine);
 	}
-
-	// Trig first viewer frame, it typically takes extra long due to initial loading of gfx content
-	ViewerFrame();
 
 	if (threads)
 	{

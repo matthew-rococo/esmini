@@ -36,7 +36,7 @@ class ScenarioPlayer
 	} RequestControlMode;
 
 public:
-	ScenarioPlayer(int argc, char *argv[]);
+	ScenarioPlayer(int &argc, char *argv[]);
 	~ScenarioPlayer();
 	bool IsQuitRequested() { return quit_request; }
 	void Frame();  // let player calculate actual time step
@@ -59,7 +59,7 @@ public:
 
 private:
 	std::string RequestControlMode2Str(RequestControlMode mode);
-	int Init(int argc, char *argv[]);
+	int Init(int &rgc, char *argv[]);
 #ifdef _SCENARIO_VIEWER
 	void ViewerFrame();
 #endif
