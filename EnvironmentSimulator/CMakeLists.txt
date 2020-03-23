@@ -68,9 +68,9 @@ if(APPLE)
 
   set ( OSG_LIBRARIES
 	
-	osgdb_serializers_osgsim.a
-	osgdb_serializers_osg.a
-	osgdb_osg.a
+	osgdb_serializers_osgsim
+	osgdb_serializers_osg
+	osgdb_osg
 	osgAnimation
 	osgText
 	osgSim
@@ -79,11 +79,13 @@ if(APPLE)
 	osgDB
 	osgGA
 	osg
+    osgdb_jpeg
 	OpenThreads
 	"-framework OpenGL"
 	"-framework Cocoa"
 	dl
-	libz.a
+	z
+    jpeg
 	#db_fbx
   )
 elseif(UNIX)
