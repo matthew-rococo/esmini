@@ -5,7 +5,6 @@ image:
 - Visual Studio 2015
 - Ubuntu1804
 - macos
-- macos-mojave
 
 
 configuration: Release
@@ -15,7 +14,7 @@ platform:
 - x86
 
 cache:
-- externals/OpenSceneGraph
+#- externals/OpenSceneGraph
 - resources/models
     
 # publish package on tag build    
@@ -99,42 +98,6 @@ for:
       - path: esmini-*_mac_catalina.zip
         name: mac_catalina_artifacts
 
-  -
-    matrix:
-      only:
-        - image: macos-mojave
-
-    build_script:
-      - echo MacOS Mojave build script
-      - sh: >-
-          chmod +x create_xcode_project.sh
-          
-          ./create_xcode_project.sh
-          
-          cd build
-          
-          xcodebuild -scheme install -configuration Release build
-
-    after_build:
-      - sh: >-
-          lipo -create EnvironmentSimulator/RoadManagerDLL/Release/libRoadManagerDLL.dylib -output ../bin/RoadManagerDLL.bundle
-          
-          lipo -create EnvironmentSimulator/ScenarioEngineDLL/Release/libScenarioEngineDLL.dylib -output ../bin/ScenarioEngineDLL.bundle
-
-          cd ..
-          
-          zip esmini-bin_mac_mojave.zip bin -r
-          
-          chmod -R +x ./run/*
-
-          ./generate_binary_dist.sh
-
-          mv esmini-demo.zip esmini-demo_mac_mojave.zip 
-
-    artifacts:
-      - path: esmini-*_mac_mojave.zip
-        name: mac_mojave_artifacts
-          
   -
     matrix:
       only:

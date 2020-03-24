@@ -31,6 +31,9 @@
 #include <osgGA/SphericalManipulator>
 #include <osgViewer/ViewerEventHandlers>
 #include <osgDB/Registry>
+#include <osgShadow/StandardShadowMap>
+#include <osgShadow/ShadowMap>
+#include <osgShadow/ShadowedScene>
 #include <osgUtil/SmoothingVisitor>
 #include "CommonMini.hpp"
 #include "ScenarioEngine.hpp"
@@ -59,6 +62,8 @@ USE_COMPRESSOR_WRAPPER(ZLibCompressor)
 USE_GRAPHICSWINDOW()
 
 using namespace viewer;
+
+static osg::ref_ptr<osgShadow::ShadowedScene> shadowedScene;
 
 // Derive a class from NodeVisitor to find a node with a  specific name.
 class FindNamedNode : public osg::NodeVisitor
@@ -632,6 +637,26 @@ Viewer::Viewer(roadmanager::OpenDrive *odrManager, const char *modelFilename, co
 
 	// set the scene to render
 	rootnode_ = new osg::MatrixTransform;
+
+#if 0
+	// Setup shadows
+	const int CastsShadowTraversalMask = 0x2;
+	LOG("1");
+	shadowedScene = new osgShadow::ShadowedScene;
+	osgShadow::ShadowSettings* settings = shadowedScene->getShadowSettings();
+	LOG("2");
+	settings->setReceivesShadowTraversalMask(CastsShadowTraversalMask);
+//	shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+	osg::ref_ptr<osgShadow::ShadowMap> st = new osgShadow::ShadowMap;
+//	osg::ref_ptr<osgShadow::StandardShadowMap> st = new osgShadow::StandardShadowMap;
+	int mapres = 1024;
+	LOG("3");
+	st->setTextureSize(osg::Vec2s(mapres, mapres));
+	shadowedScene->setShadowTechnique(st.get());
+	shadowedScene->addChild(rootnode_);
+	LOG("4");
+#endif
+
 	envTx_ = new osg::PositionAttitudeTransform;
 	roadSensors_ = new osg::Group;
 	rootnode_->addChild(roadSensors_);
@@ -656,7 +681,11 @@ Viewer::Viewer(roadmanager::OpenDrive *odrManager, const char *modelFilename, co
 		LOG("Viewer::Viewer Failed to create road lines!\n");
 	}
 
+#if 0
+	osgViewer_->setSceneData(shadowedScene);
+#else
 	osgViewer_->setSceneData(rootnode_);
+#endif
 
 	// Setup the camera models
 	nodeTrackerManipulator_ = new osgGA::NodeTrackerManipulator;
