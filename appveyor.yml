@@ -1,5 +1,3 @@
-version: 1.3.{build}
-
 image:
 - Visual Studio 2017
 - Visual Studio 2015
@@ -17,11 +15,14 @@ cache:
 - externals/OpenSceneGraph
 - resources/models
     
+before_build:
+  - cmd: gitversion /l console /output buildserver
+
 # publish package on tag build    
 deploy:
   - provider: GitHub
     tag: $(APPVEYOR_REPO_TAG_NAME)
-    release: esmini $(APPVEYOR_REPO_TAG_NAME) (build $(APPVEYOR_BUILD_NUMBER))
+    release: esmini $(GitVersion_MajorMinorPatch) (build $(APPVEYOR_BUILD_NUMBER))
     description: 'Demo and binaries'
     auth_token:
       secure: 'Zsjm85fzs4eTdDJg1VB+Y8Lk+5bEJRBkeaEtYtnbtv2IUg1sanoQTub/55QYNBsY'
