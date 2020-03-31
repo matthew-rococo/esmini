@@ -60,6 +60,16 @@
                             <Lane roadId="0" laneId="-2" offset="0" s="$TargetStartS" />
                         </Position>
                     </Action>
+                    <Action name="OverTakerStartSpeedAction">
+                        <Longitudinal>
+                            <Speed>
+                                <Dynamics shape="step"/>
+                                <Target>
+                                    <Relative object="Ego" value="1.2" valueType="factor" continuous="false" />
+                                </Target>
+                            </Speed>
+                        </Longitudinal>
+                    </Action> 
                 </Private>
             </Actions>
         </Init>
@@ -71,29 +81,6 @@
                         <Entity name="$owner"/>
                     </Actors>
                     <Maneuver name="CutInManeuver">
-						<Event name="OverTakerStartSpeedEvent" priority="overwrite" >
-							<Action name="OverTakerStartSpeedAction">
-								<Private>
-									<Longitudinal>
-										<Speed>
-											<Dynamics shape="step"/>
-											<Target>
-												<Relative object="Ego" value="1.2" valueType="factor" continuous="true" />
-											</Target>
-										</Speed>
-									</Longitudinal>
-								</Private>
-							</Action>
-							<StartConditions>
-								<ConditionGroup>
-									<Condition name="OverTakerStartSpeedCondition" delay="0" edge="rising" >
-										<ByState>
-											<AtStart type="act" name="CutInAndBrakeAct" />
-										</ByState>
-									</Condition>
-								</ConditionGroup>
-							</StartConditions>
-						</Event>					
                         <Event name="CutInEvent" priority="overwrite">
                             <Action name="CutInAction">
                                 <Private>
@@ -115,7 +102,7 @@
                                                 <Entity name="Ego"/>
                                             </TriggeringEntities>
                                             <EntityCondition>
-                                                <TimeHeadway entity="$owner" value="$HeadwayTime_LaneChange" freespace="false" freespace="true" rule="greater_than"/>
+                                                <TimeHeadway entity="$owner" value="$HeadwayTime_LaneChange" alongRoute="false" freespace="false" rule="greater_than"/>
                                             </EntityCondition>
                                         </ByEntity>
                                     </Condition>
