@@ -33,7 +33,7 @@ target_link_libraries (
 # dat2ascii target
 set (TARGET2 dat2ascii)
 add_executable ( ${TARGET2} dat2ascii.cpp Replay.cpp )
-target_link_libraries ( ${TARGET2} RoadManager CommonMini )
+target_link_libraries ( ${TARGET2} RoadManager CommonMini ${TIME_LIB} )
 
 
 if (UNIX)
