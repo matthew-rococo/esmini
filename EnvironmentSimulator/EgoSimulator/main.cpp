@@ -218,6 +218,7 @@ void UpdateExternVehicles(double deltaTimeStep, ScenarioPlayer *player)
 			vh->dyn_model->speed_, vh->dyn_model->wheelAngle_, vh->dyn_model->wheelRotation_,
 			vh->dyn_model->posX_, vh->dyn_model->posY_, vh->dyn_model->posZ_,
 			vh->dyn_model->heading_, vh->dyn_model->pitch_, 0);
+
 	}
 }
 
