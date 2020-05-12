@@ -14,7 +14,7 @@
 
 #include "OSCGlobalAction.hpp"
 #include "OSCPrivateAction.hpp"
-#include "OSCParameterDeclaration.hpp"
+#include "OSCParameterDeclarations.hpp"
 #include "OSCConditionGroup.hpp"
 #include "CommonMini.hpp"
 
@@ -68,7 +68,7 @@ namespace scenarioengine
 	class OSCManeuver
 	{
 	public:
-		OSCParameterDeclaration parameter_declaration_;
+		OSCParameterDeclarations parameter_declarations_;
 		std::vector<Event*> event_;
 		std::string name_;
 

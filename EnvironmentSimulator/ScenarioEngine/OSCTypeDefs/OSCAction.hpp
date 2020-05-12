@@ -40,10 +40,7 @@ namespace scenarioengine
 		State state_;
 		std::string name_;
 
-		OSCAction(BaseType type) : base_type_(type), state_(State::INACTIVE)
-		{
-			LOG("");
-		}
+		OSCAction(BaseType type) : base_type_(type), state_(State::INACTIVE) {}
 
 		std::string basetype2str(BaseType type);
 

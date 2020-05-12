@@ -22,7 +22,7 @@
 namespace scenarioengine
 {
 
-	struct ActSequence  // Act Sequence
+	struct ManeuverGroup 
 	{
 		typedef struct
 		{
@@ -52,10 +52,9 @@ namespace scenarioengine
 
 		State state_;
 
-		std::vector<ActSequence*> sequence_;
+		std::vector<ManeuverGroup*> sequence_;
 		std::vector<OSCConditionGroup*> start_condition_group_;
-		std::vector<OSCConditionGroup*> end_condition_group_;
-		std::vector<OSCConditionGroup*> cancel_condition_group_;
+		std::vector<OSCConditionGroup*> stop_condition_group_;
 
 		std::string name_;
 
@@ -86,8 +85,9 @@ namespace scenarioengine
 	class Story
 	{
 	public:
-		Story(std::string name, std::string owner);
+		Story(std::string name);
 
+		OSCParameterDeclarations parameter_declarations_;
 		Act* FindActByName(std::string name);
 		Event* FindEventByName(std::string name);
 		OSCAction* FindActionByName(std::string name);
@@ -95,7 +95,6 @@ namespace scenarioengine
 
 		std::vector<Act*> act_;
 
-		std::string owner_;
 		std::string name_;
 	};
 

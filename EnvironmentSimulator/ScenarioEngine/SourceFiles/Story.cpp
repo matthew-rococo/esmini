@@ -16,9 +16,9 @@
 using namespace scenarioengine;
 
 
-Story::Story(std::string name, std::string owner)
+Story::Story(std::string name)
 {
-	LOG("Story: New Story %s created, owner: %s", name.c_str(), owner == "" ? "undefined" : owner.c_str());
+	LOG("Story: New Story %s created", name.c_str());
 }
 
 Act* Story::FindActByName(std::string name)

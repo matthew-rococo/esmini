@@ -49,30 +49,37 @@ namespace scenarioengine
 
 		typedef enum
 		{
+			RATE,
+			TIME,
+			DISTANCE,
+			DIMENSION_UNDEFINED
+		} DynamicsDimension;
+
+		typedef enum
+		{
 			LINEAR,
 			CUBIC,
 			SINUSOIDAL,
 			STEP,
-			UNDEFINED
+			SHAPE_UNDEFINED
 		} DynamicsShape;
 
 		class TransitionDynamics
 		{
 		public:
 			DynamicsShape shape_;
+			DynamicsDimension dimension_;
+			double target_value_;
 
 			double Evaluate(double factor, double start_value, double end_value);  // 0 = start_value, 1 = end_value
 
-			TransitionDynamics() : shape_(DynamicsShape::STEP) {}
+			TransitionDynamics() : shape_(DynamicsShape::STEP), dimension_(DynamicsDimension::TIME), target_value_(0) {}
 		};
 
 		Type type_;
 		Object *object_;
 
-		OSCPrivateAction(OSCPrivateAction::Type type) : OSCAction(OSCAction::BaseType::PRIVATE), type_(type)
-		{
-			LOG("");
-		}
+		OSCPrivateAction(OSCPrivateAction::Type type) : OSCAction(OSCAction::BaseType::PRIVATE), type_(type) {}
 
 		virtual void print()
 		{
@@ -91,19 +98,7 @@ namespace scenarioengine
 	{
 	public:
 
-		typedef enum
-		{
-			RATE,
-			TIME,
-			DISTANCE
-		} Timing;
-
-		struct
-		{
-			Timing timing_type_;
-			double timing_target_value_;
-			TransitionDynamics transition_;
-		} dynamics_;
+		TransitionDynamics transition_dynamics_;
 
 		class Target
 		{
@@ -159,17 +154,15 @@ namespace scenarioengine
 		double start_speed_;
 		double elapsed_;
 
-		LongSpeedAction() : OSCPrivateAction(OSCPrivateAction::Type::LONG_SPEED), target_(0)
+		LongSpeedAction() : OSCPrivateAction(OSCPrivateAction::Type::LONG_SPEED), target_(0), start_speed_(0)
 		{
-			dynamics_.timing_type_ = Timing::TIME;  // Make default
-			dynamics_.timing_target_value_ = 0.0;
 			elapsed_ = 0;
 		}
 
 		LongSpeedAction(const LongSpeedAction &action) : OSCPrivateAction(OSCPrivateAction::Type::LONG_SPEED)
 		{
 			target_ = action.target_;
-			dynamics_ = action.dynamics_;
+			transition_dynamics_ = action.transition_dynamics_;
 			elapsed_ = action.elapsed_;
 			start_speed_ = action.start_speed_;
 		}
@@ -249,18 +242,7 @@ namespace scenarioengine
 	class LatLaneChangeAction : public OSCPrivateAction
 	{
 	public:
-		typedef enum
-		{
-			TIME,
-			DISTANCE
-		} Timing;
-
-		struct
-		{
-			Timing timing_type_;
-			double timing_target_value_;
-			TransitionDynamics transition_;
-		} dynamics_;
+		TransitionDynamics transition_dynamics_;
 
 		class Target
 		{
@@ -288,7 +270,7 @@ namespace scenarioengine
 		public:
 			Object *object_;
 
-			TargetRelative() : Target(Target::Type::RELATIVE) {}
+			TargetRelative() : Target(Target::Type::RELATIVE), object_(0) {}
 		};
 
 		Target *target_;
@@ -297,16 +279,15 @@ namespace scenarioengine
 		int target_lane_id_;
 		double elapsed_;
 
-		LatLaneChangeAction(LatLaneChangeAction::Timing timing_type = Timing::TIME) : OSCPrivateAction(OSCPrivateAction::Type::LAT_LANE_CHANGE)
+		LatLaneChangeAction(LatLaneChangeAction::DynamicsDimension timing_type = DynamicsDimension::TIME) : OSCPrivateAction(OSCPrivateAction::Type::LAT_LANE_CHANGE)
 		{
-			dynamics_.timing_type_ = timing_type;
-			dynamics_.timing_target_value_ = 0.0;
+			transition_dynamics_.dimension_ = timing_type;
 			elapsed_ = 0;
 		}
 
 		LatLaneChangeAction(const LatLaneChangeAction &action) : OSCPrivateAction(OSCPrivateAction::Type::LAT_LANE_CHANGE)
 		{
-			dynamics_ = action.dynamics_;
+			transition_dynamics_ = action.transition_dynamics_;
 			target_ = action.target_;
 			start_t_ = action.start_t_;
 			target_lane_offset_ = action.target_lane_offset_;

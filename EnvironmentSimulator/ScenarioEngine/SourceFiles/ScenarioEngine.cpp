@@ -169,23 +169,11 @@ void ScenarioEngine::step(double deltaSimTime, bool initial)
 			if (story->act_[j]->IsActive())
 			{
 				// Check end conditions
-				for (size_t k = 0; k < story->act_[j]->end_condition_group_.size(); k++)
+				for (size_t k = 0; k < story->act_[j]->stop_condition_group_.size(); k++)
 				{
-					for (size_t l = 0; l < story->act_[j]->end_condition_group_[k]->condition_.size(); l++)
+					for (size_t l = 0; l < story->act_[j]->stop_condition_group_[k]->condition_.size(); l++)
 					{
-						if (story->act_[j]->end_condition_group_[k]->condition_[l]->Evaluate(&storyBoard, simulationTime))
-						{
-							story->act_[j]->Stop();
-						}
-					}
-				}
-
-				// Check cancel conditions
-				for (size_t k = 0; k < story->act_[j]->cancel_condition_group_.size(); k++)
-				{
-					for (size_t l = 0; l < story->act_[j]->cancel_condition_group_[k]->condition_.size(); l++)
-					{
-						if (story->act_[j]->cancel_condition_group_[k]->condition_[l]->Evaluate(&storyBoard, simulationTime))
+						if (story->act_[j]->stop_condition_group_[k]->condition_[l]->Evaluate(&storyBoard, simulationTime))
 						{
 							story->act_[j]->Stop();
 						}
@@ -434,7 +422,7 @@ void ScenarioEngine::parseScenario(RequestControlMode control_mode_first_vehicle
 	roadmanager::Position::LoadOpenDrive(getOdrFilename().c_str());
 	odrManager = roadmanager::Position::GetOpenDrive();
 
-	scenarioReader->parseGlobalParameterDeclaration();
+	scenarioReader->parseGlobalParameterDeclarations();
 	scenarioReader->parseCatalogs();
 	scenarioReader->parseEntities();
 
